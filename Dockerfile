@@ -10,7 +10,7 @@ COPY . .
 RUN flutter pub get
 
 # Build Web release
-RUN flutter build web --release --web-renderer canvaskit
+RUN flutter build web --release
 
 # Stage 2: Serve the web app
 FROM node:20-alpine
