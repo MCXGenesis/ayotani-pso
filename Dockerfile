@@ -6,11 +6,17 @@ WORKDIR /app
 # Copy project files
 COPY . .
 
+# Build-time Supabase configuration
+ARG SUPABASE_URL
+ARG SUPABASE_ANON_KEY
+
 # Get Flutter dependencies
 RUN flutter pub get
 
 # Build Web release
-RUN flutter build web --release
+RUN flutter build web --release \
+	--dart-define=SUPABASE_URL=$SUPABASE_URL \
+	--dart-define=SUPABASE_ANON_KEY=$SUPABASE_ANON_KEY
 
 # Stage 2: Serve the web app
 FROM node:20-alpine

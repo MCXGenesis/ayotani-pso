@@ -21,7 +21,10 @@ jobs:
       - name: Build & Push image
         run: |
           IMAGE="asia-southeast2-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/${{ secrets.ARTIFACT_REPO }}/pso"
-          docker build -t $IMAGE:${GITHUB_SHA} .
+          docker build \
+            --build-arg SUPABASE_URL=${{ secrets.SUPABASE_URL }} \
+            --build-arg SUPABASE_ANON_KEY=${{ secrets.SUPABASE_ANON_KEY }} \
+            -t $IMAGE:${GITHUB_SHA} .
           docker push $IMAGE:${GITHUB_SHA}
 
       - name: Deploy ke Cloud Run
@@ -33,5 +36,4 @@ jobs:
             --region=${{ secrets.GCP_REGION }} \
             --allow-unauthenticated \
             --port=8080 \
-            --memory=512Mi \
-            --set-env-vars="MONGODB_URL=${{ secrets.MONGODB_URL }}"
+            --memory=512Mi
