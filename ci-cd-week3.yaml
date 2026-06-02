@@ -1,0 +1,74 @@
+name: CI/CD with Tests & Monitoring (Cloud Run)
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  test-build-deploy-monitor:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      # ---------- PHASE 1: TRIGGER & AUTH ----------
+      - uses: google-github-actions/auth@v2
+        with:
+          credentials_json: ${{ secrets.GCP_CREDENTIALS }}
+      - uses: google-github-actions/setup-gcloud@v2
+
+      # ---------- PHASE 2: API UNIT TESTS (Mockito) ----------
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.22.0'
+      - run: flutter pub get
+      - run: flutter pub add --dev mockito build_runner
+      - name: Generate mocks & run tests
+        run: |
+          flutter pub run build_runner build --delete-conflicting-outputs
+          flutter test test/ --no-pub
+        # Fail gate – pipeline stops if any test fails
+
+      # ---------- PHASE 3: BUILD & PUSH IMAGE ----------
+      - name: Build & Push image
+        run: |
+          IMAGE="${{ secrets.GCP_REGION }}-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/${{ secrets.ARTIFACT_REPO }}/pso"
+          docker build \
+            --build-arg SUPABASE_URL=${{ secrets.SUPABASE_URL }} \
+            --build-arg SUPABASE_ANON_KEY=${{ secrets.SUPABASE_ANON_KEY }} \
+            -t $IMAGE:${GITHUB_SHA} .
+          docker push $IMAGE:${GITHUB_SHA}
+
+      # ---------- PHASE 4: DEPLOY TO CLOUD RUN ----------
+      - name: Deploy to Cloud Run
+        run: |
+          IMAGE="${{ secrets.GCP_REGION }}-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/${{ secrets.ARTIFACT_REPO }}/pso"
+          gcloud run deploy my-app-service \
+            --image=$IMAGE:${GITHUB_SHA} \
+            --region=${{ secrets.GCP_REGION }} \
+            --allow-unauthenticated \
+            --port=8080
+
+      # ---------- PHASE 5: MONITORING (Uptime + Alert) ----------
+      - name: Create uptime check
+        run: |
+          gcloud monitoring uptime create "my-flutter-web-uptime" \
+            --display-name="Flutter Web App Health" \
+            --resource-labels=project_id=${{ secrets.GCP_PROJECT_ID }},service_name=my-app-service \
+            --request-path=/ \
+            --period=60s --timeout=10s
+      - name: Create alert policy for 5xx errors
+        run: |
+          cat <<EOF > alert.json
+          {
+            "displayName": "Flutter App - High Error Rate",
+            "conditions": [{
+              "conditionThreshold": {
+                "filter": "metric.type=\"run.googleapis.com/request_count\" AND metric.label.\"response_code_class\"=\"5xx\"",
+                "thresholdValue": 0.1,
+                "duration": "120s"
+              }
+            }]
+          }
+          EOF
+          gcloud alpha monitoring policies create --policy-from-file=alert.json || true
