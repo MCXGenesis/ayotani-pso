@@ -51,7 +51,7 @@ jobs:
             --allow-unauthenticated \
             --port=8080
 
-      # ---------- PHASE 5: MONITORING (Uptime + Alert) ----------
+# ---------- PHASE 5: MONITORING (Uptime + Alert) ----------
       - name: Create uptime check
         run: |
           SERVICE_URL=$(gcloud run services describe my-app-service \
@@ -59,23 +59,16 @@ jobs:
             --project=${{ secrets.GCP_PROJECT_ID }} \
             --format="value(status.url)")
 
-          cat > uptime.json << EOF
-          {
-            "displayName": "Flutter Web App Health",
-            "timeout": "10s",
-            "period": "60s",
-            "httpCheck": {
-              "path": "/",
-              "port": 443,
-              "useSsl": true
-            },
-            "monitoredResource": {
-              "type": "uptime_url",
-              "labels": {
-                "host": "${SERVICE_URL#https://}"
-              }
-            }
-          }
-          EOF
+          # Extract the raw hostname by stripping the "https://" prefix
+          HOST_URL=${SERVICE_URL#https://}
 
-          gcloud monitoring uptime create --config-from-file=uptime.json
+          # Create the uptime check using inline flags
+          gcloud monitoring uptime create "Flutter Web App Health" \
+            --project=${{ secrets.GCP_PROJECT_ID }} \
+            --resource-type="uptime-url" \
+            --resource-labels="host=$HOST_URL,project_id=${{ secrets.GCP_PROJECT_ID }}" \
+            --protocol="https" \
+            --path="/" \
+            --port=443 \
+            --timeout=10 \
+            --period=1
