@@ -58,7 +58,7 @@ jobs:
             --display-name="Flutter Web App Health" \
             --resource-labels=project_id=${{ secrets.GCP_PROJECT_ID }},service_name=my-app-service \
             --request-path=/ \
-            --period=60s --timeout=10s
+            --period=1 --timeout=10s
       - name: Create alert policy for 5xx errors
         run: |
           cat <<EOF > alert.json
