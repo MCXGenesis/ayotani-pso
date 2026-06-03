@@ -54,11 +54,15 @@ jobs:
       # ---------- PHASE 5: MONITORING (Uptime + Alert) ----------
       - name: Create uptime check
         run: |
-          gcloud monitoring uptime create "my-flutter-web-uptime" \
+          SERVICE_URL=$(gcloud run services describe my-app-service --region=${{ secrets.GCP_REGION }} --project=${{ secrets.GCP_PROJECT_ID }} --format="value(status.url)")
+          HOST=$(echo "$SERVICE_URL" | sed -E 's#https?://##')
+          gcloud monitoring uptime-checks create http "my-flutter-web-uptime" \
             --display-name="Flutter Web App Health" \
-            --resource-labels=project_id=${{ secrets.GCP_PROJECT_ID }},service_name=my-app-service \
-            --request-path=/ \
-            --period=1 --timeout=10
+            --host="$HOST" \
+            --path="/" \
+            --period=1 \
+            --timeout=10 \
+            --project=${{ secrets.GCP_PROJECT_ID }}
       - name: Create alert policy for 5xx errors
         run: |
           cat <<EOF > alert.json
