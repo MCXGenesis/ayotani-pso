@@ -54,27 +54,28 @@ jobs:
       # ---------- PHASE 5: MONITORING (Uptime + Alert) ----------
       - name: Create uptime check
         run: |
-          SERVICE_URL=$(gcloud run services describe my-app-service --region=${{ secrets.GCP_REGION }} --project=${{ secrets.GCP_PROJECT_ID }} --format="value(status.url)")
-          HOST=$(echo "$SERVICE_URL" | sed -E 's#https?://##')
-          gcloud monitoring uptime-checks create http "my-flutter-web-uptime" \
-            --display-name="Flutter Web App Health" \
-            --host="$HOST" \
-            --path="/" \
-            --period=1 \
-            --timeout=10 \
-            --project=${{ secrets.GCP_PROJECT_ID }}
-      - name: Create alert policy for 5xx errors
-        run: |
-          cat <<EOF > alert.json
+          SERVICE_URL=$(gcloud run services describe my-app-service \
+            --region=${{ secrets.GCP_REGION }} \
+            --project=${{ secrets.GCP_PROJECT_ID }} \
+            --format="value(status.url)")
+
+          cat > uptime.json << EOF
           {
-            "displayName": "Flutter App - High Error Rate",
-            "conditions": [{
-              "conditionThreshold": {
-                "filter": "metric.type=\"run.googleapis.com/request_count\" AND metric.label.\"response_code_class\"=\"5xx\"",
-                "thresholdValue": 0.1,
-                "duration": "120s"
+            "displayName": "Flutter Web App Health",
+            "timeout": "10s",
+            "period": "60s",
+            "httpCheck": {
+              "path": "/",
+              "port": 443,
+              "useSsl": true
+            },
+            "monitoredResource": {
+              "type": "uptime_url",
+              "labels": {
+                "host": "${SERVICE_URL#https://}"
               }
-            }]
+            }
           }
           EOF
-          gcloud alpha monitoring policies create --policy-from-file=alert.json || true
+
+          gcloud monitoring uptime create --config-from-file=uptime.json
