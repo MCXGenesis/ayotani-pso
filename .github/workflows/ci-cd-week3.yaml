@@ -18,12 +18,17 @@ jobs:
       - name: Configure Docker for Artifact Registry
         run: gcloud auth configure-docker ${{ secrets.GCP_REGION }}-docker.pkg.dev --quiet
 
-      # ---------- PHASE 2: API UNIT TESTS (Mockito) ----------
+      # ---------- PHASE 2: LINT (Static Analysis) ----------
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
         with:
           flutter-version: '3.44.1'
       - run: flutter pub get
+      - name: Run Flutter Analyze (Linting)
+        run: flutter analyze --fatal-infos --fatal-warnings
+        # Fail gate – pipeline stops if any lint issue is found
+
+      # ---------- PHASE 3: API UNIT TESTS (Mockito) ----------
       - run: flutter pub add --dev mockito build_runner
       - name: Generate mocks & run tests
         run: |
@@ -31,7 +36,7 @@ jobs:
           flutter test test/ --no-pub
         # Fail gate – pipeline stops if any test fails
 
-      # ---------- PHASE 3: BUILD & PUSH IMAGE ----------
+      # ---------- PHASE 4: BUILD & PUSH IMAGE ----------
       - name: Build & Push image
         run: |
           IMAGE="${{ secrets.GCP_REGION }}-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/${{ secrets.ARTIFACT_REPO }}/pso"
@@ -41,7 +46,7 @@ jobs:
             -t $IMAGE:${GITHUB_SHA} .
           docker push $IMAGE:${GITHUB_SHA}
 
-      # ---------- PHASE 4: DEPLOY TO CLOUD RUN ----------
+      # ---------- PHASE 5: DEPLOY TO CLOUD RUN ----------
       - name: Deploy to Cloud Run
         run: |
           IMAGE="${{ secrets.GCP_REGION }}-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/${{ secrets.ARTIFACT_REPO }}/pso"
@@ -51,7 +56,7 @@ jobs:
             --allow-unauthenticated \
             --port=8080
 
-# ---------- PHASE 5: MONITORING (Uptime + Alert) ----------
+# ---------- PHASE 6: MONITORING (Uptime + Alert) ----------
       - name: Create uptime check
         run: |
           SERVICE_URL=$(gcloud run services describe my-app-service \
