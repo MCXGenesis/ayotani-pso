@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 import 'package:ayotani/routes/app_routes.dart';
 
@@ -8,6 +9,10 @@ import 'helpers/test_app.dart';
 
 void main() {
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();
+  Supabase.initialize(
+    url: 'https://placeholder.supabase.co',
+    anonKey: 'placeholder_key',
+  );
 
   // ============================================================
   // AUTH FLOW E2E TESTS
@@ -26,7 +31,7 @@ void main() {
       await tester.pumpAndSettle(const Duration(seconds: 3));
 
       // Should navigate to login (since no user is authenticated)
-      expect(find.text('Login'), findsOneWidget);
+      expect(find.text('Login'), findsNWidgets(2));
     });
 
     testWidgets('Login page shows all required elements', (tester) async {
@@ -34,7 +39,7 @@ void main() {
       await tester.pumpAndSettle();
 
       // Verify login page UI elements
-      expect(find.text('Login'), findsOneWidget);
+      expect(find.text('Login'), findsNWidgets(2));
       expect(find.byType(TextField), findsNWidgets(2)); // email + password
       expect(find.text('Lupa Password?'), findsOneWidget);
       expect(find.text('Belum punya akun?'), findsOneWidget);
@@ -150,7 +155,7 @@ void main() {
       await tester.pumpAndSettle();
 
       // Should be back on login page
-      expect(find.text('Login'), findsOneWidget);
+      expect(find.text('Login'), findsNWidgets(2));
     });
 
     testWidgets('Password visibility toggle works on login', (tester) async {

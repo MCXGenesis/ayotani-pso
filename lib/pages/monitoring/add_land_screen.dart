@@ -131,7 +131,7 @@ class _AddLandScreenState extends State<AddLandScreen> {
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(20),
                 image: const DecorationImage(
-                  image: NetworkImage('https://images.unsplash.com/photo-1625246333195-58197bd47d72?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'),
+                  image: NetworkImage('https://placehold.co/800x600/0A3D2F/FFFFFF.png?text=Mulai+Bertani'),
                   fit: BoxFit.cover,
                 ),
               ),
