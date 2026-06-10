@@ -2,6 +2,7 @@ import 'dart:io';
 import 'dart:convert';
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -23,6 +24,7 @@ class TestApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     HttpOverrides.global = TestHttpOverrides();
+    GoogleFonts.config.allowRuntimeFetching = false;
     
     // Ignore image loading / codec exceptions in tests to prevent flakiness
     final originalOnError = FlutterError.onError;
