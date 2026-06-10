@@ -5,17 +5,13 @@ import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:http/http.dart' as http; 
 import 'dart:convert';
-import '../../models/iot_reading_model.dart';
 import '../../models/land_model.dart';
 import '../../models/land_task_model.dart';
 import '../../providers/auth_provider.dart';
-import '../../services/iot_service.dart';
 import '../../services/land_service.dart';
 import '../../services/weather_service.dart';
 import '../../theme/app_colors.dart';
-import 'add_land_screen.dart';
 import '../../widgets/land_summary_stats.dart';
-import '../../routes/app_routes.dart';
 
 class MonitoringScreen extends StatefulWidget {
   final int? initialLandId; // ADDED THIS
@@ -27,7 +23,6 @@ class MonitoringScreen extends StatefulWidget {
 }
 
 class _MonitoringScreenState extends State<MonitoringScreen> with SingleTickerProviderStateMixin {
-  final _iotService = IotService();
   final _landService = LandService();
   final _weatherService = WeatherService();
 
@@ -50,8 +45,6 @@ class _MonitoringScreenState extends State<MonitoringScreen> with SingleTickerPr
   final _editProfitController = TextEditingController();
   final _editHarvestKgController = TextEditingController();
   String? _editPlantType;
-  DateTime? _editPlantingDate;
-  DateTime? _editHarvestDate;
 
   @override
   void initState() {
@@ -149,8 +142,6 @@ class _MonitoringScreenState extends State<MonitoringScreen> with SingleTickerPr
     _editProfitController.text = _selectedLand!.targetProfitPercentage.toString();
     _editHarvestKgController.text = _selectedLand!.targetHarvestKg.toString();
     _editPlantType = _selectedLand!.plantType;
-    _editPlantingDate = _selectedLand!.plantingDate;
-    _editHarvestDate = _selectedLand!.harvestDate;
   }
 
   @override
