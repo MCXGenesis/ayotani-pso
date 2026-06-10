@@ -27,7 +27,7 @@ jobs:
       - name: Install Linux test dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y libgtk-3-dev
+          sudo apt-get install -y libgtk-3-dev xvfb
       - name: Run Flutter Analyze (Linting)
         run: flutter analyze --no-fatal-warnings --no-fatal-infos
 
@@ -42,9 +42,9 @@ jobs:
       # ---------- PHASE 3.5: INTEGRATION / E2E TESTS ----------
       - name: Run Integration / E2E Tests
         run: |
-          flutter test -d linux integration_test/app_test.dart --no-pub
-          flutter test -d linux integration_test/auth_flow_test.dart --no-pub
-          flutter test -d linux integration_test/navigation_test.dart --no-pub
+          xvfb-run -a flutter test -d linux integration_test/app_test.dart --no-pub
+          xvfb-run -a flutter test -d linux integration_test/auth_flow_test.dart --no-pub
+          xvfb-run -a flutter test -d linux integration_test/navigation_test.dart --no-pub
         # Fail gate - pipeline stops if E2E/Integration tests fail
 
       # ---------- PHASE 4: BUILD & PUSH IMAGE ----------
