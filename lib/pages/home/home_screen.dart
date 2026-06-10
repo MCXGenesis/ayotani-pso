@@ -106,7 +106,9 @@ class _HomeContentState extends State<_HomeContent> {
   @override
   void initState() {
     super.initState();
-    _fetchAllData();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _fetchAllData();
+    });
   }
 
   Future<void> _fetchAllData() async {
@@ -274,7 +276,7 @@ class _HomeContentState extends State<_HomeContent> {
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(20),
         image: const DecorationImage(
-          image: NetworkImage('https://images.unsplash.com/photo-1534088568595-a066f410bcda?auto=format&fit=crop&w=800&q=80'),
+          image: NetworkImage('https://placehold.co/800x400/0A3D2F/FFFFFF.png?text=Info+Cuaca'),
           fit: BoxFit.cover,
           colorFilter: ColorFilter.mode(Colors.black26, BlendMode.darken),
         ),

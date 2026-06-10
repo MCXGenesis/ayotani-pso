@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -29,9 +28,9 @@ class _MarketplaceScreenState extends State<MarketplaceScreen> {
 
   // Dummy Banners
   final List<String> _bannerImages = [
-    'https://images.unsplash.com/photo-1599520847774-4b47209f257a?auto=format&fit=crop&w=800&q=80',
+    'https://placehold.co/800x450/0A3D2F/FFFFFF.png?text=AyoTani+Shop',
     'https://images.unsplash.com/photo-1560493676-04071c5f467b?auto=format&fit=crop&w=800&q=80',
-    'https://images.unsplash.com/photo-1625246333195-58197bd47d72?auto=format&fit=crop&w=800&q=80',
+    'https://placehold.co/800x450/0A3D2F/FFFFFF.png?text=Smart+Farming',
   ];
 
   @override

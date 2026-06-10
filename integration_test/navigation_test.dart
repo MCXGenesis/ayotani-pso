@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 import 'package:ayotani/routes/app_routes.dart';
 
@@ -9,6 +10,10 @@ import 'helpers/test_app.dart';
 /// E2E tests for app navigation and screen transitions.
 void main() {
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();
+  Supabase.initialize(
+    url: 'https://placeholder.supabase.co',
+    anonKey: 'placeholder_key',
+  );
 
   group('E2E: Screen Navigation', () {
     testWidgets('All main screens load without crashes', (tester) async {
