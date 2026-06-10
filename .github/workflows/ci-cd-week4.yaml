@@ -24,6 +24,10 @@ jobs:
         with:
           flutter-version: '3.44.1'
       - run: flutter pub get
+      - name: Install Linux test dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libgtk-3-dev
       - name: Run Flutter Analyze (Linting)
         run: flutter analyze --no-fatal-warnings --no-fatal-infos
 
