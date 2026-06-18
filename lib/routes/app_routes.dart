@@ -25,6 +25,7 @@ import '../pages/news/comments_page.dart';
 import '../models/comment_model.dart';
 import '../pages/news/article_list_screen.dart';
 import '../pages/profile/customer_service_screen.dart';
+import '../pages/weather/weather_screen.dart';
 
 class AppRoutes {
   static const splash = '/splash';
@@ -54,6 +55,7 @@ class AppRoutes {
   static const monitoring = '/monitoring';
   static const landList = '/land-list';
   static const addLand = '/add-land';
+  static const weather = '/weather';
 
   static Map<String, WidgetBuilder> get routes => {
         splash: (_) => const SplashScreen(),
@@ -108,6 +110,7 @@ class AppRoutes {
         },
         
         landList: (_) => const LandListScreen(),
+        weather: (_) => const WeatherScreen(),
         addLand: (_) => const AddLandScreen(),
         monitoring: (context) {
           final args = ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?;
