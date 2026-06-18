@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../providers/auth_provider.dart';
+import '../../providers/theme_provider.dart';
 import '../../routes/app_routes.dart';
 
 class ProfilePage extends StatelessWidget {
@@ -28,13 +29,16 @@ class ProfilePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final themeProvider = Provider.of<ThemeProvider>(context);
+    final theme = Theme.of(context);
+
     return Consumer<AuthProvider>(builder: (context, authProvider, _) {
       final user = authProvider.userProfile;
       final name = user?.username ?? 'Petani';
       final avatarUrl = user?.avatarUrl;
 
       return Scaffold(
-        backgroundColor: Colors.white,
+        backgroundColor: theme.scaffoldBackgroundColor,
         body: SafeArea(
           child: SingleChildScrollView(
             padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 20.0),
@@ -48,7 +52,7 @@ class ProfilePage extends StatelessWidget {
                   children: [
                     CircleAvatar(
                       radius: 35,
-                      backgroundColor: Colors.grey[200],
+                      backgroundColor: theme.brightness == Brightness.dark ? Colors.grey[800] : Colors.grey[200],
                       backgroundImage: (avatarUrl != null && avatarUrl.isNotEmpty)
                           ? NetworkImage(avatarUrl)
                           : null,
@@ -63,7 +67,7 @@ class ProfilePage extends StatelessWidget {
                         style: GoogleFonts.inter(
                           fontSize: 22,
                           fontWeight: FontWeight.bold,
-                          color: Colors.black87,
+                          color: theme.colorScheme.onSurface,
                         ),
                         overflow: TextOverflow.ellipsis,
                       ),
@@ -79,7 +83,7 @@ class ProfilePage extends StatelessWidget {
                   style: GoogleFonts.inter(
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
-                    color: Colors.black87,
+                    color: theme.colorScheme.onSurface,
                   ),
                 ),
                 
@@ -128,6 +132,22 @@ class ProfilePage extends StatelessWidget {
                      Navigator.pushNamed(context, AppRoutes.customerService);
                   },
                 ),
+                _buildMenuItem(
+                  context,
+                  title: 'Mode Gelap',
+                  icon: themeProvider.isDarkMode ? Icons.dark_mode : Icons.light_mode,
+                  iconColor: const Color(0xFF4CAF50),
+                  bgColor: const Color(0xFFE8F5E9),
+                  onTap: () {
+                    themeProvider.toggleTheme(!themeProvider.isDarkMode);
+                  },
+                  trailing: Switch(
+                    value: themeProvider.isDarkMode,
+                    onChanged: (value) {
+                      themeProvider.toggleTheme(value);
+                    },
+                  ),
+                ),
 
                 const SizedBox(height: 30),
 
@@ -154,7 +174,7 @@ class ProfilePage extends StatelessWidget {
                           style: GoogleFonts.inter(
                             fontSize: 16,
                             fontWeight: FontWeight.w500,
-                            color: Colors.black87,
+                            color: theme.colorScheme.onSurface,
                           ),
                         ),
                       ],
@@ -177,7 +197,9 @@ class ProfilePage extends StatelessWidget {
     required Color iconColor,
     required Color bgColor,
     required VoidCallback onTap,
+    Widget? trailing,
   }) {
+    final theme = Theme.of(context);
     return Padding(
       padding: const EdgeInsets.only(bottom: 16),
       child: InkWell(
@@ -189,7 +211,7 @@ class ProfilePage extends StatelessWidget {
               width: 44,
               height: 44,
               decoration: BoxDecoration(
-                color: bgColor,
+                color: theme.brightness == Brightness.dark ? const Color(0xFF1B2C21) : bgColor,
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Icon(icon, color: iconColor, size: 24),
@@ -201,15 +223,15 @@ class ProfilePage extends StatelessWidget {
                 style: GoogleFonts.inter(
                   fontSize: 16,
                   fontWeight: FontWeight.w500,
-                  color: Colors.black87,
+                  color: theme.colorScheme.onSurface,
                 ),
               ),
             ),
-            Container(
+            trailing ?? Container(
               width: 32,
               height: 32,
               decoration: BoxDecoration(
-                color: Colors.grey[100],
+                color: theme.brightness == Brightness.dark ? Colors.grey[850] : Colors.grey[100],
                 shape: BoxShape.circle,
               ),
               child: Icon(Icons.chevron_right, color: Colors.grey[600], size: 20),

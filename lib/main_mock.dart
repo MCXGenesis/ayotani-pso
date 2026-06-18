@@ -4,21 +4,27 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:provider/provider.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
+import 'package:http/http.dart' as http;
 
+import 'providers/theme_provider.dart';
 import 'app.dart';
 import 'providers/auth_provider.dart';
 import 'providers/cart_provider.dart';
 
-void main() async {
+Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // Setup HttpOverrides to mock all network calls (Supabase API, Weather, Images)
-  HttpOverrides.global = MockHttpOverrides();
+  // Setup HttpOverrides to mock all network calls (Supabase API, Weather, Images) on native platforms
+  if (!kIsWeb) {
+    HttpOverrides.global = MockHttpOverrides();
+  }
 
-  // Initialize Supabase client with dummy placeholder credentials
+  // Initialize Supabase client with dummy placeholder credentials and custom httpClient for cross-platform (Web) support
   await Supabase.initialize(
     url: 'https://placeholder.supabase.co',
     anonKey: 'placeholder_key',
+    httpClient: MockSupabaseHttpClient(),
   );
 
   // Setup Flutter error filtering for image loading/codec issues in mock mode
@@ -39,6 +45,7 @@ void main() async {
       providers: [
         ChangeNotifierProvider(create: (_) => AuthProvider()),
         ChangeNotifierProvider(create: (_) => CartProvider()),
+        ChangeNotifierProvider(create: (_) => ThemeProvider()),
       ],
       child: const App(),
     ),
@@ -489,5 +496,23 @@ class _MockHttpClientResponse extends Stream<List<int>> implements HttpClientRes
       return const <RedirectInfo>[];
     }
     return null;
+  }
+}
+
+/// Cross-platform mock HTTP client for Supabase that works on Web
+class MockSupabaseHttpClient extends http.BaseClient {
+  @override
+  Future<http.StreamedResponse> send(http.BaseRequest request) async {
+    final uri = request.url;
+    final responseHelper = _MockHttpClientResponse(uri: uri);
+    final bytes = responseHelper._getResponseBody();
+    
+    return http.StreamedResponse(
+      Stream.value(bytes),
+      200,
+      headers: {
+        'content-type': 'application/json; charset=utf-8',
+      },
+    );
   }
 }

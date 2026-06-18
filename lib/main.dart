@@ -4,6 +4,8 @@ import 'package:provider/provider.dart'; // Add this import if missing
 import 'app.dart';
 import 'providers/auth_provider.dart';
 import 'providers/cart_provider.dart';
+import 'providers/theme_provider.dart';
+import 'main_mock.dart' as mock;
 
 // --- CONFIGURATION ---
 const String supabaseUrl = String.fromEnvironment('SUPABASE_URL');
@@ -13,7 +15,9 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   if (supabaseUrl.isEmpty || supabaseAnonKey.isEmpty) {
-    throw StateError('Missing Supabase configuration. Set SUPABASE_URL and SUPABASE_ANON_KEY at build time.');
+    debugPrint('⚠️ Missing SUPABASE_URL or SUPABASE_ANON_KEY. Falling back to local offline mock mode.');
+    await mock.main();
+    return;
   }
 
   // Initialize Supabase
@@ -28,6 +32,7 @@ void main() async {
       providers: [
         ChangeNotifierProvider(create: (_) => AuthProvider()),
         ChangeNotifierProvider(create: (_) => CartProvider()),
+        ChangeNotifierProvider(create: (_) => ThemeProvider()),
       ],
       child: const App(),
     ),
