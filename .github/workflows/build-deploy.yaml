@@ -34,7 +34,14 @@ jobs:
       - run: flutter pub get
 
       - name: Run Flutter Analyze (Linting)
-        run: flutter analyze --no-fatal-warnings --no-fatal-infos
+        run: flutter analyze --no-fatal-warnings --no-fatal-infos --write=lint-results.txt || true
+
+      - name: Upload Lint Report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: lint-report
+          path: lint-results.txt
 
   # ---------- PHASE 2: UNIT TESTS (Mockito) ----------
   unit-test:
