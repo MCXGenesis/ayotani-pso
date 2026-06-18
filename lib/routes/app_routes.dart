@@ -110,7 +110,13 @@ class AppRoutes {
         },
         
         landList: (_) => const LandListScreen(),
-        weather: (_) => const WeatherScreen(),
+        weather: (context) {
+          final args = ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?;
+          return WeatherScreen(
+            initialLat: args?['lat'] as double?,
+            initialLon: args?['lon'] as double?,
+          );
+        },
         addLand: (_) => const AddLandScreen(),
         monitoring: (context) {
           final args = ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?;

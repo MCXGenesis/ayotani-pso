@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:math';
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 import '../models/weather_model.dart';
@@ -33,6 +34,20 @@ class WeatherService {
     'Mojokerto': '35.76.01.1001',
     'Pasuruan': '35.14.02.2001',
     'Probolinggo': '35.79.01.1001',
+  };
+
+  /// Koordinat (lat, lon) tiap kota – untuk menghitung kota terdekat dari GPS.
+  static const Map<String, List<double>> cityCoordinates = {
+    'Surabaya':    [-7.2575, 112.7521],
+    'Malang':      [-7.9667, 112.6333],
+    'Banyuwangi':  [-8.2192, 114.3691],
+    'Jombang':     [-7.5500, 112.2167],
+    'Kediri':      [-7.8167, 112.0167],
+    'Jember':      [-8.1721, 113.7022],
+    'Sidoarjo':    [-7.4478, 112.7183],
+    'Mojokerto':   [-7.4711, 112.4352],
+    'Pasuruan':    [-7.6421, 112.9025],
+    'Probolinggo': [-7.7543, 113.2159],
   };
 
   static const String _defaultAdm4 = '35.78.15.1001'; // Surabaya Genteng
@@ -100,6 +115,39 @@ class WeatherService {
   Future<BmkgWeatherData?> getDefaultWeather() async {
     return getWeatherByAdm4(_defaultAdm4);
   }
+
+  /// Cari nama kota BMKG terdekat dari koordinat GPS (lat/lon) menggunakan
+  /// rumus Haversine. Digunakan untuk integrasi lokasi real-time.
+  static String getNearestCity(double lat, double lon) {
+    String nearest = 'Surabaya';
+    double minDist = double.infinity;
+
+    for (final entry in cityCoordinates.entries) {
+      final cityLat = entry.value[0];
+      final cityLon = entry.value[1];
+      final dist = _haversineDistance(lat, lon, cityLat, cityLon);
+      if (dist < minDist) {
+        minDist = dist;
+        nearest = entry.key;
+      }
+    }
+
+    debugPrint('[WeatherService] Nearest city to ($lat, $lon) = $nearest (${minDist.toStringAsFixed(1)} km)');
+    return nearest;
+  }
+
+  /// Haversine distance in km between two coordinates.
+  static double _haversineDistance(double lat1, double lon1, double lat2, double lon2) {
+    const r = 6371.0;
+    final dLat = _toRad(lat2 - lat1);
+    final dLon = _toRad(lon2 - lon1);
+    final a = sin(dLat / 2) * sin(dLat / 2) +
+        cos(_toRad(lat1)) * cos(_toRad(lat2)) * sin(dLon / 2) * sin(dLon / 2);
+    final c = 2 * atan2(sqrt(a), sqrt(1 - a));
+    return r * c;
+  }
+
+  static double _toRad(double deg) => deg * pi / 180;
 
   /// Daftar nama kota yang tersedia.
   static List<String> get availableCities => cityAdm4Codes.keys.toList();

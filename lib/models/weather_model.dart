@@ -187,6 +187,107 @@ class BmkgWeatherData {
     }).toList();
   }
 
+  /// Interpolated hourly entries for the next 24 hours
+  List<BmkgWeatherEntry> getHourlyForecast24h() {
+    if (allEntries.isEmpty) return [];
+
+    // Sort allEntries just to be absolutely sure
+    final sorted = List<BmkgWeatherEntry>.from(allEntries)
+      ..sort((a, b) => a.localTime.compareTo(b.localTime));
+
+    final now = DateTime.now();
+    final startHour = DateTime(now.year, now.month, now.day, now.hour);
+    final List<BmkgWeatherEntry> result = [];
+
+    for (int i = 0; i < 24; i++) {
+      final targetTime = startHour.add(Duration(hours: i));
+
+      // Find the entries bounding targetTime
+      BmkgWeatherEntry? before;
+      BmkgWeatherEntry? after;
+
+      for (final entry in sorted) {
+        final entryTime = entry.localTime;
+        if (entryTime.isBefore(targetTime) || entryTime.isAtSameMomentAs(targetTime)) {
+          if (before == null || entryTime.isAfter(before.localTime)) {
+            before = entry;
+          }
+        }
+        if (entryTime.isAfter(targetTime) || entryTime.isAtSameMomentAs(targetTime)) {
+          if (after == null || entryTime.isBefore(after.localTime)) {
+            after = entry;
+          }
+        }
+      }
+
+      if (before == null && after == null) {
+        continue;
+      }
+
+      final BmkgWeatherEntry interpolated;
+      if (before != null && after != null && !before.localTime.isAtSameMomentAs(after.localTime)) {
+        // Interpolate
+        final totalMinutes = after.localTime.difference(before.localTime).inMinutes;
+        final targetMinutes = targetTime.difference(before.localTime).inMinutes;
+        final ratio = totalMinutes > 0 ? targetMinutes / totalMinutes : 0.0;
+
+        final temp = (before.temperature + (after.temperature - before.temperature) * ratio).round();
+        final hum = (before.humidity + (after.humidity - before.humidity) * ratio).round();
+        final ws = before.windSpeed + (after.windSpeed - before.windSpeed) * ratio;
+        final precip = before.precipitation + (after.precipitation - before.precipitation) * ratio;
+
+        // Choose closer entry for discrete/string properties
+        final closer = ratio <= 0.5 ? before : after;
+
+        interpolated = BmkgWeatherEntry(
+          datetime: closer.datetime,
+          localDatetime: _formatDateTime(targetTime),
+          temperature: temp,
+          humidity: hum,
+          windSpeed: ws,
+          windDirection: closer.windDirection,
+          weatherCode: closer.weatherCode,
+          weatherDesc: closer.weatherDesc,
+          weatherDescEn: closer.weatherDescEn,
+          imageUrl: closer.imageUrl,
+          precipitation: precip,
+          visibilityText: closer.visibilityText,
+        );
+      } else {
+        // Only one of them is available, or they are at the exact same moment
+        final base = before ?? after!;
+        interpolated = BmkgWeatherEntry(
+          datetime: base.datetime,
+          localDatetime: _formatDateTime(targetTime),
+          temperature: base.temperature,
+          humidity: base.humidity,
+          windSpeed: base.windSpeed,
+          windDirection: base.windDirection,
+          weatherCode: base.weatherCode,
+          weatherDesc: base.weatherDesc,
+          weatherDescEn: base.weatherDescEn,
+          imageUrl: base.imageUrl,
+          precipitation: base.precipitation,
+          visibilityText: base.visibilityText,
+        );
+      }
+
+      result.add(interpolated);
+    }
+
+    return result;
+  }
+
+  String _formatDateTime(DateTime dt) {
+    final y = dt.year.toString().padLeft(4, '0');
+    final m = dt.month.toString().padLeft(2, '0');
+    final d = dt.day.toString().padLeft(2, '0');
+    final h = dt.hour.toString().padLeft(2, '0');
+    final min = dt.minute.toString().padLeft(2, '0');
+    final s = dt.second.toString().padLeft(2, '0');
+    return "$y-$m-$d $h:$min:$s";
+  }
+
   static BmkgWeatherData fromJson(Map<String, dynamic> json) {
     final location = BmkgLocation.fromJson(json['lokasi'] as Map<String, dynamic>);
     final dataList = json['data'] as List<dynamic>;
