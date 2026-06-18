@@ -47,7 +47,7 @@ jobs:
         run: |
           mkdir -p test-results
           flutter pub run build_runner build --delete-conflicting-outputs
-          flutter test test/ --no-pub --machine 1> test-results/unit-tests.json 2>/dev/null || true
+          flutter test test/ --no-pub --machine 2>/dev/null | grep '^\[' > test-results/unit-tests.json || true
 
       - name: Upload Unit Test Results
         if: always()
@@ -90,9 +90,9 @@ jobs:
       - name: Run Integration / E2E Tests
         run: |
           mkdir -p test-results
-          xvfb-run -a flutter test -d linux integration_test/app_test.dart --no-pub --machine 1> test-results/e2e-app.json 2>/dev/null || true
-          xvfb-run -a flutter test -d linux integration_test/auth_flow_test.dart --no-pub --machine 1> test-results/e2e-auth.json 2>/dev/null || true
-          xvfb-run -a flutter test -d linux integration_test/navigation_test.dart --no-pub --machine 1> test-results/e2e-nav.json 2>/dev/null || true
+          xvfb-run -a flutter test -d linux integration_test/app_test.dart --no-pub --machine 2>/dev/null | grep '^\[' > test-results/e2e-app.json || true
+          xvfb-run -a flutter test -d linux integration_test/auth_flow_test.dart --no-pub --machine 2>/dev/null | grep '^\[' > test-results/e2e-auth.json || true
+          xvfb-run -a flutter test -d linux integration_test/navigation_test.dart --no-pub --machine 2>/dev/null | grep '^\[' > test-results/e2e-nav.json || true
 
       - name: Upload E2E Test Results
         if: always()
