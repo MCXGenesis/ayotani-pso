@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:http/http.dart' as http;
-import 'dart:convert';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 
 import '../../providers/auth_provider.dart';
 import '../../models/land_model.dart';
 import '../../models/educational_content_model.dart'; 
+import '../../models/weather_model.dart';
 import '../../services/educational_service.dart'; 
 import '../../services/land_service.dart'; 
+import '../../services/weather_service.dart';
 import '../../routes/app_routes.dart';
 
 import '../monitoring/land_list_screen.dart'; 
@@ -96,8 +96,10 @@ class _HomeContent extends StatefulWidget {
 class _HomeContentState extends State<_HomeContent> {
   final _educationalService = EducationalService();
   final _landService = LandService();
+  final _weatherService = WeatherService();
 
-  Map<String, dynamic>? _weatherData;
+  BmkgWeatherData? _weatherData;
+  bool _weatherLoading = true;
   List<Land> _lands = [];
   List<EducationalContent> _videos = [];
   List<EducationalContent> _articles = []; 
@@ -122,7 +124,17 @@ class _HomeContentState extends State<_HomeContent> {
       _lands = await _landService.getUserLands(userId);
     }
 
-    _fetchWeather(-7.2575, 112.7521);
+    // Fetch dari BMKG (non-blocking)
+    _weatherService.getDefaultWeather().then((data) {
+      if (mounted) {
+        setState(() {
+          _weatherData = data;
+          _weatherLoading = false;
+        });
+      }
+    }).catchError((_) {
+      if (mounted) setState(() => _weatherLoading = false);
+    });
 
     final videos = await _educationalService.getVideos();
     final articles = await _educationalService.getArticles();
@@ -133,23 +145,6 @@ class _HomeContentState extends State<_HomeContent> {
         _articles = articles.take(5).toList();
         _isLoading = false;
       });
-    }
-  }
-
-  Future<void> _fetchWeather(double lat, double long) async {
-    try {
-      final url = Uri.parse('https://api.open-meteo.com/v1/forecast?latitude=$lat&longitude=$long&current=temperature_2m,relative_humidity_2m,precipitation,wind_speed_10m&timezone=auto');
-      final response = await http.get(url);
-      if (response.statusCode == 200) {
-        final data = json.decode(response.body);
-        if (mounted) {
-          setState(() {
-            _weatherData = data['current'];
-          });
-        }
-      }
-    } catch (e) {
-      debugPrint("Weather Error: $e");
     }
   }
 
@@ -269,36 +264,139 @@ class _HomeContentState extends State<_HomeContent> {
   }
 
   Widget _buildWeatherCard() {
-    final temp = _weatherData?['temperature_2m']?.toString() ?? '--';
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(20),
-        image: const DecorationImage(
-          image: NetworkImage('https://placehold.co/800x400/0A3D2F/FFFFFF.png?text=Info+Cuaca'),
-          fit: BoxFit.cover,
-          colorFilter: ColorFilter.mode(Colors.black26, BlendMode.darken),
+    final current = _weatherData?.current;
+    final temp = current != null ? '${current.temperature}' : '--';
+    final desc = current?.weatherDesc ?? 'Memuat data...';
+    final humidity = current?.humidity ?? 0;
+    final windSpeed = current?.windSpeed.toStringAsFixed(1) ?? '--';
+    final weatherIcon = current?.weatherIcon ?? '🌤️';
+    final isRainy = current?.isRainy ?? false;
+
+    return GestureDetector(
+      onTap: () => Navigator.pushNamed(context, AppRoutes.weather),
+      child: Container(
+        width: double.infinity,
+        padding: const EdgeInsets.all(20),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(24),
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: isRainy
+                ? [const Color(0xFF1A3A5C), const Color(0xFF2C5F8A)]
+                : [const Color(0xFF1B6CA8), const Color(0xFF0A3D2F)],
+          ),
+          boxShadow: [
+            BoxShadow(
+              color: const Color(0xFF0A3D2F).withValues(alpha: 0.3),
+              blurRadius: 16,
+              offset: const Offset(0, 6),
+            ),
+          ],
         ),
-      ),
-      child: Column(
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              const Icon(Icons.wb_sunny_rounded, color: Colors.orangeAccent, size: 48),
-              const SizedBox(width: 16),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+        child: _weatherLoading
+            ? Row(
                 children: [
-                  Text('$temp°', style: GoogleFonts.inter(color: Colors.white, fontSize: 40, fontWeight: FontWeight.bold, height: 1.0)),
-                  Text('Hari ini cukup cerah', style: GoogleFonts.inter(color: Colors.white.withValues(alpha: 0.9), fontSize: 13)),
+                  const SizedBox(
+                    width: 20,
+                    height: 20,
+                    child: CircularProgressIndicator(
+                        strokeWidth: 2, color: Colors.white54),
+                  ),
+                  const SizedBox(width: 12),
+                  Text('Memuat data cuaca BMKG...',
+                      style: GoogleFonts.inter(
+                          color: Colors.white54, fontSize: 13)),
+                ],
+              )
+            : Column(
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Row(
+                        children: [
+                          Text(weatherIcon,
+                              style: const TextStyle(fontSize: 40)),
+                          const SizedBox(width: 12),
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text('$temp°C',
+                                  style: GoogleFonts.inter(
+                                      color: Colors.white,
+                                      fontSize: 36,
+                                      fontWeight: FontWeight.bold,
+                                      height: 1.0)),
+                              Text(desc,
+                                  style: GoogleFonts.inter(
+                                      color: Colors.white.withValues(alpha: 0.85),
+                                      fontSize: 13)),
+                            ],
+                          ),
+                        ],
+                      ),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.end,
+                        children: [
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 10, vertical: 4),
+                            decoration: BoxDecoration(
+                              color: Colors.white.withValues(alpha: 0.2),
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Text('BMKG',
+                                    style: GoogleFonts.inter(
+                                        color: Colors.white,
+                                        fontSize: 11,
+                                        fontWeight: FontWeight.bold)),
+                                const SizedBox(width: 4),
+                                const Icon(Icons.verified,
+                                    color: Colors.white70, size: 12),
+                              ],
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+                          const Icon(Icons.arrow_forward_ios,
+                              color: Colors.white70, size: 14),
+                        ],
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 16),
+                  Row(
+                    children: [
+                      _buildWeatherStat(Icons.water_drop_outlined,
+                          '$humidity%', 'Kelembapan'),
+                      const SizedBox(width: 16),
+                      _buildWeatherStat(Icons.air, '$windSpeed m/s', 'Angin'),
+                      const Spacer(),
+                      Text('Surabaya · Data BMKG',
+                          style: GoogleFonts.inter(
+                              color: Colors.white60, fontSize: 10)),
+                    ],
+                  ),
                 ],
               ),
-            ],
-          ),
-        ],
       ),
+    );
+  }
+
+  Widget _buildWeatherStat(IconData icon, String value, String label) {
+    return Row(
+      children: [
+        Icon(icon, color: Colors.white70, size: 14),
+        const SizedBox(width: 4),
+        Text('$value ',
+            style: GoogleFonts.inter(
+                color: Colors.white, fontSize: 12, fontWeight: FontWeight.w600)),
+        Text(label,
+            style: GoogleFonts.inter(color: Colors.white60, fontSize: 11)),
+      ],
     );
   }
 

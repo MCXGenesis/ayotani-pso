@@ -8,7 +8,6 @@ import '../../models/land_model.dart';
 import '../../services/land_service.dart';
 import '../../services/weather_service.dart';
 import '../../providers/auth_provider.dart';
-import '../../theme/app_colors.dart';
 
 class AddLandScreen extends StatefulWidget {
   const AddLandScreen({super.key});
@@ -222,6 +221,40 @@ class _AddLandScreenState extends State<AddLandScreen> {
               ),
             ),
           ),
+
+        Positioned(
+          bottom: 90, left: 20, right: 20,
+          child: GestureDetector(
+            onTap: () {
+              Navigator.pushNamed(
+                context,
+                '/weather',
+                arguments: {
+                  'lat': _selectedLocation.latitude,
+                  'lon': _selectedLocation.longitude,
+                },
+              );
+            },
+            child: Container(
+              height: 42,
+              alignment: Alignment.center,
+              decoration: BoxDecoration(
+                color: Colors.white.withOpacity(0.9),
+                borderRadius: BorderRadius.circular(25),
+                border: Border.all(color: const Color(0xFF0A3D2F).withOpacity(0.3)),
+              ),
+              child: const Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(Icons.cloud, color: Color(0xFF0A3D2F), size: 16),
+                  SizedBox(width: 6),
+                  Text('Lihat Cuaca Lokasi Ini',
+                      style: TextStyle(color: Color(0xFF0A3D2F), fontWeight: FontWeight.w600, fontSize: 13)),
+                ],
+              ),
+            ),
+          ),
+        ),
 
         Positioned(
           bottom: 30, left: 20, right: 20,

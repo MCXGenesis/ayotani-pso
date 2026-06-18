@@ -4,7 +4,6 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:provider/provider.dart';
-import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:http/http.dart' as http;
 
 import 'providers/theme_provider.dart';
@@ -12,44 +11,46 @@ import 'app.dart';
 import 'providers/auth_provider.dart';
 import 'providers/cart_provider.dart';
 
-Future<void> main() async {
-  WidgetsFlutterBinding.ensureInitialized();
+void main() {
+  final mockClient = MockHttpClientWeb();
 
-  // Setup HttpOverrides to mock all network calls (Supabase API, Weather, Images) on native platforms
-  if (!kIsWeb) {
+  http.runWithClient(() async {
+    WidgetsFlutterBinding.ensureInitialized();
+
+    // Setup HttpOverrides to mock all network calls (Supabase API, Weather, Images)
     HttpOverrides.global = MockHttpOverrides();
-  }
 
-  // Initialize Supabase client with dummy placeholder credentials and custom httpClient for cross-platform (Web) support
-  await Supabase.initialize(
-    url: 'https://placeholder.supabase.co',
-    anonKey: 'placeholder_key',
-    httpClient: MockSupabaseHttpClient(),
-  );
+    // Initialize Supabase client with dummy placeholder credentials and our web-compatible httpClient
+    await Supabase.initialize(
+      url: 'https://placeholder.supabase.co',
+      anonKey: 'placeholder_key',
+      httpClient: mockClient,
+    );
 
-  // Setup Flutter error filtering for image loading/codec issues in mock mode
-  final originalOnError = FlutterError.onError;
-  FlutterError.onError = (FlutterErrorDetails details) {
-    final exceptionStr = details.exception.toString();
-    if (exceptionStr.contains('Codec failed') ||
-        exceptionStr.contains('image codec') ||
-        exceptionStr.contains('ImageCodecException') ||
-        exceptionStr.contains('Image resource service')) {
-      return; // Suppress image codec/loading exceptions
-    }
-    originalOnError?.call(details);
-  };
+    // Setup Flutter error filtering for image loading/codec issues in mock mode
+    final originalOnError = FlutterError.onError;
+    FlutterError.onError = (FlutterErrorDetails details) {
+      final exceptionStr = details.exception.toString();
+      if (exceptionStr.contains('Codec failed') ||
+          exceptionStr.contains('image codec') ||
+          exceptionStr.contains('ImageCodecException') ||
+          exceptionStr.contains('Image resource service')) {
+        return; // Suppress image codec/loading exceptions
+      }
+      originalOnError?.call(details);
+    };
 
-  runApp(
-    MultiProvider(
-      providers: [
-        ChangeNotifierProvider(create: (_) => AuthProvider()),
-        ChangeNotifierProvider(create: (_) => CartProvider()),
-        ChangeNotifierProvider(create: (_) => ThemeProvider()),
-      ],
-      child: const App(),
-    ),
-  );
+    runApp(
+      MultiProvider(
+        providers: [
+          ChangeNotifierProvider(create: (_) => AuthProvider()),
+          ChangeNotifierProvider(create: (_) => CartProvider()),
+          ChangeNotifierProvider(create: (_) => ThemeProvider()),
+        ],
+        child: const App(),
+      ),
+    );
+  }, () => mockClient);
 }
 
 /// HttpOverrides to inject the MockHttpClient
@@ -131,10 +132,10 @@ class _MockHttpHeaders implements HttpHeaders {
     if (name == #contentLength) return -1;
     if (name == #persistentConnection) return true;
     if (name == #contentType) {
-      if (uri != null && uri!.host.contains('open-meteo.com')) {
-        return ContentType.parse('application/json');
-      }
-      if (uri != null && uri!.host.contains('supabase.co')) {
+      if (uri != null && (uri!.host.contains('open-meteo.com') ||
+                          uri!.host.contains('supabase.co') ||
+                          uri!.host.contains('bmkg.go.id') ||
+                          uri!.host.contains('api.bmkg.go.id'))) {
         return ContentType.parse('application/json');
       }
       return ContentType.parse('image/png');
@@ -396,9 +397,107 @@ class _MockHttpClientResponse extends Stream<List<int>> implements HttpClientRes
   static final List<int> _emptyArrayBytes = utf8.encode('[]');
   static final List<int> _emptyObjectBytes = utf8.encode('{}');
 
+  // Mock BMKG API response
+  static final List<int> _bmkgWeatherBytes = utf8.encode(jsonEncode({
+    "lokasi": {
+      "adm1": "35", "adm2": "35.78", "adm3": "35.78.15", "adm4": "35.78.15.1001",
+      "provinsi": "Jawa Timur", "kotkab": "Kota Surabaya",
+      "kecamatan": "Genteng", "desa": "Genteng",
+      "lon": 112.7378, "lat": -7.2576, "timezone": "+0700"
+    },
+    "data": [{
+      "lokasi": {
+        "adm1": "35", "adm2": "35.78", "adm3": "35.78.15", "adm4": "35.78.15.1001",
+        "provinsi": "Jawa Timur", "kotkab": "Kota Surabaya",
+        "kecamatan": "Genteng", "desa": "Genteng",
+        "lon": 112.7378, "lat": -7.2576, "timezone": "+0700", "type": "adm4"
+      },
+      "cuaca": [[
+        {
+          "datetime": "2026-06-18T02:00:00Z", "t": 30, "tcc": 5, "tp": 0.0,
+          "weather": 0, "weather_desc": "Cerah", "weather_desc_en": "Sunny",
+          "wd_deg": 86, "wd": "NE", "wd_to": "SW", "ws": 7.2, "hu": 62,
+          "vs": 14000, "vs_text": "> 10 km",
+          "image": "https://api-apps.bmkg.go.id/storage/icon/cuaca/cerah-am.svg",
+          "utc_datetime": "2026-06-18 02:00:00",
+          "local_datetime": "2026-06-18 09:00:00"
+        },
+        {
+          "datetime": "2026-06-18T05:00:00Z", "t": 33, "tcc": 10, "tp": 0.0,
+          "weather": 0, "weather_desc": "Cerah", "weather_desc_en": "Sunny",
+          "wd_deg": 38, "wd": "N", "wd_to": "S", "ws": 8.3, "hu": 55,
+          "vs": 15000, "vs_text": "> 10 km",
+          "image": "https://api-apps.bmkg.go.id/storage/icon/cuaca/cerah-am.svg",
+          "utc_datetime": "2026-06-18 05:00:00",
+          "local_datetime": "2026-06-18 12:00:00"
+        },
+        {
+          "datetime": "2026-06-18T08:00:00Z", "t": 31, "tcc": 20, "tp": 0.1,
+          "weather": 1, "weather_desc": "Cerah Berawan", "weather_desc_en": "Partly Cloudy",
+          "wd_deg": 13, "wd": "N", "wd_to": "S", "ws": 11.7, "hu": 68,
+          "vs": 9850, "vs_text": "< 10 km",
+          "image": "https://api-apps.bmkg.go.id/storage/icon/cuaca/cerah-berawan-am.svg",
+          "utc_datetime": "2026-06-18 08:00:00",
+          "local_datetime": "2026-06-18 15:00:00"
+        },
+        {
+          "datetime": "2026-06-18T11:00:00Z", "t": 28, "tcc": 8, "tp": 0.0,
+          "weather": 0, "weather_desc": "Cerah", "weather_desc_en": "Sunny",
+          "wd_deg": 39, "wd": "N", "wd_to": "S", "ws": 9.0, "hu": 72,
+          "vs": 12000, "vs_text": "> 10 km",
+          "image": "https://api-apps.bmkg.go.id/storage/icon/cuaca/cerah-pm.svg",
+          "utc_datetime": "2026-06-18 11:00:00",
+          "local_datetime": "2026-06-18 18:00:00"
+        }
+      ],[
+        {
+          "datetime": "2026-06-18T17:00:00Z", "t": 27, "tcc": 15, "tp": 0.0,
+          "weather": 1, "weather_desc": "Cerah Berawan", "weather_desc_en": "Partly Cloudy",
+          "wd_deg": 165, "wd": "SE", "wd_to": "NW", "ws": 6.1, "hu": 77,
+          "vs": 9500, "vs_text": "< 10 km",
+          "image": "https://api-apps.bmkg.go.id/storage/icon/cuaca/cerah-pm.svg",
+          "utc_datetime": "2026-06-18 17:00:00",
+          "local_datetime": "2026-06-19 00:00:00"
+        },
+        {
+          "datetime": "2026-06-18T23:00:00Z", "t": 26, "tcc": 0, "tp": 0.0,
+          "weather": 0, "weather_desc": "Cerah", "weather_desc_en": "Sunny",
+          "wd_deg": 101, "wd": "E", "wd_to": "W", "ws": 4.1, "hu": 80,
+          "vs": 10000, "vs_text": "> 10 km",
+          "image": "https://api-apps.bmkg.go.id/storage/icon/cuaca/cerah-am.svg",
+          "utc_datetime": "2026-06-18 23:00:00",
+          "local_datetime": "2026-06-19 06:00:00"
+        }
+      ],[
+        {
+          "datetime": "2026-06-19T05:00:00Z", "t": 32, "tcc": 0, "tp": 0.0,
+          "weather": 0, "weather_desc": "Cerah", "weather_desc_en": "Sunny",
+          "wd_deg": 26, "wd": "N", "wd_to": "S", "ws": 9.3, "hu": 52,
+          "vs": 16000, "vs_text": "> 10 km",
+          "image": "https://api-apps.bmkg.go.id/storage/icon/cuaca/cerah-am.svg",
+          "utc_datetime": "2026-06-19 05:00:00",
+          "local_datetime": "2026-06-19 12:00:00"
+        },
+        {
+          "datetime": "2026-06-19T11:00:00Z", "t": 29, "tcc": 40, "tp": 0.2,
+          "weather": 2, "weather_desc": "Cerah Berawan", "weather_desc_en": "Partly Cloudy",
+          "wd_deg": 64, "wd": "NE", "wd_to": "SW", "ws": 3.1, "hu": 78,
+          "vs": 8000, "vs_text": "< 9 km",
+          "image": "https://api-apps.bmkg.go.id/storage/icon/cuaca/cerah-berawan-pm.svg",
+          "utc_datetime": "2026-06-19 11:00:00",
+          "local_datetime": "2026-06-19 18:00:00"
+        }
+      ]]
+    }]
+  }));
+
   List<int> _getResponseBody() {
     final path = uri.path;
     final host = uri.host;
+
+    if (host.contains('api.bmkg.go.id') || host.contains('bmkg.go.id')) {
+      return _adjustBmkgWeatherBytes(_bmkgWeatherBytes);
+    }
 
     if (host.contains('open-meteo.com')) {
       return _weatherJsonBytes;
@@ -448,6 +547,40 @@ class _MockHttpClientResponse extends Stream<List<int>> implements HttpClientRes
     return _transparentPng;
   }
 
+  Future<List<int>> _fetchRealBmkg() async {
+    final currentOverrides = HttpOverrides.current;
+    HttpOverrides.global = null;
+    try {
+      final client = HttpClient();
+      final req = await client.getUrl(uri);
+      final resp = await req.close();
+      final bytes = await resp.reduce((a, b) => [...a, ...b]);
+      return bytes;
+    } catch (e) {
+      print('[MockHttpClient] Real BMKG request failed: $e, falling back to mock');
+      return _getResponseBody();
+    } finally {
+      HttpOverrides.global = currentOverrides;
+    }
+  }
+
+  Future<List<int>> _fetchRealNetwork() async {
+    final currentOverrides = HttpOverrides.current;
+    HttpOverrides.global = null;
+    try {
+      final client = HttpClient();
+      final req = await client.getUrl(uri);
+      final resp = await req.close();
+      final bytes = await resp.reduce((a, b) => [...a, ...b]);
+      return bytes;
+    } catch (e) {
+      print('[MockHttpClient] Real network request failed for $uri: $e');
+      return _getResponseBody();
+    } finally {
+      HttpOverrides.global = currentOverrides;
+    }
+  }
+
   @override
   StreamSubscription<List<int>> listen(
     void Function(List<int> event)? onData, {
@@ -455,8 +588,21 @@ class _MockHttpClientResponse extends Stream<List<int>> implements HttpClientRes
     void Function()? onDone,
     bool? cancelOnError,
   }) {
-    final bytes = _getResponseBody();
-    return Stream<List<int>>.fromIterable([bytes]).listen(
+    Stream<List<int>> stream;
+    final host = uri.host;
+    final isBmkg = host.contains('api.bmkg.go.id') || host.contains('bmkg.go.id');
+    final isMockTarget = host.contains('supabase.co') || 
+                         host.contains('open-meteo.com') ||
+                         host.contains('placeholder.supabase.co');
+
+    if (isBmkg) {
+      stream = Stream.fromFuture(_fetchRealBmkg());
+    } else if (!isMockTarget) {
+      stream = Stream.fromFuture(_fetchRealNetwork());
+    } else {
+      stream = Stream.value(_getResponseBody());
+    }
+    return stream.listen(
       onData,
       onError: onError,
       onDone: onDone,
@@ -499,20 +645,133 @@ class _MockHttpClientResponse extends Stream<List<int>> implements HttpClientRes
   }
 }
 
-/// Cross-platform mock HTTP client for Supabase that works on Web
-class MockSupabaseHttpClient extends http.BaseClient {
+/// A Web-compatible mock http Client that overrides all http requests on the Web platform.
+class MockHttpClientWeb extends http.BaseClient {
+  List<int> _getResponseBody(Uri uri) {
+    final path = uri.path;
+    final host = uri.host;
+
+    if (host.contains('api.bmkg.go.id') || host.contains('bmkg.go.id')) {
+      return _adjustBmkgWeatherBytes(_MockHttpClientResponse._bmkgWeatherBytes);
+    }
+
+    if (host.contains('open-meteo.com')) {
+      return _MockHttpClientResponse._weatherJsonBytes;
+    }
+
+    if (host.contains('supabase.co') || host.contains('supabase')) {
+      if (path.contains('/auth/v1/token') || path.contains('/auth/v1/signup')) {
+        return _MockHttpClientResponse._supabaseAuthBytes;
+      }
+      if (path.contains('/auth/v1/logout')) {
+        return _MockHttpClientResponse._emptyObjectBytes;
+      }
+      if (path.contains('/rest/v1/profiles')) {
+        return _MockHttpClientResponse._supabaseProfileBytes;
+      }
+      if (path.contains('/rest/v1/lands')) {
+        return _MockHttpClientResponse._supabaseLandsBytes;
+      }
+      if (path.contains('/rest/v1/land_progress_logs')) {
+        return _MockHttpClientResponse._supabaseProgressLogsBytes;
+      }
+      if (path.contains('/rest/v1/land_tasks')) {
+        return _MockHttpClientResponse._supabaseLandTasksBytes;
+      }
+      if (path.contains('/rest/v1/iot_readings')) {
+        return _MockHttpClientResponse._supabaseIotBytes;
+      }
+      if (path.contains('/rest/v1/daily_tasks')) {
+        return _MockHttpClientResponse._supabaseDailyTasksBytes;
+      }
+      if (path.contains('/rest/v1/user_tasks')) {
+        return _MockHttpClientResponse._supabaseUserTasksBytes;
+      }
+      if (path.contains('/rest/v1/educational_content')) {
+        return _MockHttpClientResponse._supabaseEducationalBytes;
+      }
+      if (path.contains('/rest/v1/orders')) {
+        return _MockHttpClientResponse._supabaseSingleOrderBytes;
+      }
+      if (path.contains('/rest/v1/order_items')) {
+        return _MockHttpClientResponse._supabaseSingleOrderItemBytes;
+      }
+      return _MockHttpClientResponse._emptyArrayBytes;
+    }
+
+    return _MockHttpClientResponse._transparentPng;
+  }
+
   @override
   Future<http.StreamedResponse> send(http.BaseRequest request) async {
-    final uri = request.url;
-    final responseHelper = _MockHttpClientResponse(uri: uri);
-    final bytes = responseHelper._getResponseBody();
+    print('[MockHttpClientWeb] send: ${request.method} ${request.url}');
+    final host = request.url.host;
     
+    // Check if it is a request to BMKG (which we want to attempt live first, then fallback to mock)
+    final isBmkg = host.contains('api.bmkg.go.id') || host.contains('bmkg.go.id');
+    
+    // Check if it is other mock targets (Supabase or Open-Meteo)
+    final isMockTarget = host.contains('supabase.co') || 
+                         host.contains('open-meteo.com') ||
+                         host.contains('placeholder.supabase.co');
+
+    if (isBmkg) {
+      try {
+        final response = await Zone.root.run(() async {
+          final client = http.Client();
+          return await client.send(request);
+        });
+        print('[MockHttpClientWeb] BMKG request success!');
+        return response;
+      } catch (e) {
+        print('[MockHttpClientWeb] BMKG request failed: $e, falling back to mock');
+      }
+    } else if (!isMockTarget) {
+      // For any other domains (like Google Fonts, unsplash images), load them for real!
+      try {
+        final response = await Zone.root.run(() async {
+          final client = http.Client();
+          return await client.send(request);
+        });
+        return response;
+      } catch (e) {
+        print('[MockHttpClientWeb] Real network request failed for ${request.url}: $e');
+      }
+    }
+
+    final bytes = _getResponseBody(request.url);
+    final headers = <String, String>{};
+    if (request.url.host.contains('open-meteo.com') ||
+        request.url.host.contains('supabase.co') ||
+        request.url.host.contains('bmkg.go.id') ||
+        request.url.host.contains('api.bmkg.go.id')) {
+      headers['content-type'] = 'application/json';
+    } else {
+      headers['content-type'] = 'image/png';
+    }
     return http.StreamedResponse(
       Stream.value(bytes),
       200,
-      headers: {
-        'content-type': 'application/json; charset=utf-8',
-      },
+      contentLength: bytes.length,
+      request: request,
+      headers: headers,
     );
+  }
+}
+
+/// Helper function to dynamically adjust BMKG weather dates to match real-time
+List<int> _adjustBmkgWeatherBytes(List<int> originalBytes) {
+  try {
+    final rawJson = utf8.decode(originalBytes);
+    final today = DateTime.now();
+    final todayStr = '${today.year}-${today.month.toString().padLeft(2, '0')}-${today.day.toString().padLeft(2, '0')}';
+    final tomorrow = today.add(const Duration(days: 1));
+    final tomorrowStr = '${tomorrow.year}-${tomorrow.month.toString().padLeft(2, '0')}-${tomorrow.day.toString().padLeft(2, '0')}';
+    final adjustedJson = rawJson
+        .replaceAll('2026-06-18', todayStr)
+        .replaceAll('2026-06-19', tomorrowStr);
+    return utf8.encode(adjustedJson);
+  } catch (_) {
+    return originalBytes;
   }
 }

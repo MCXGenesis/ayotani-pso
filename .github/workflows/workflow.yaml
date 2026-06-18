@@ -1,0 +1,154 @@
+name: CI/CD with E2E Integration Tests & Monitoring (Cloud Run) - Week 4
+
+on:
+  push:
+    branches: [staging]
+
+jobs:
+  # ---------- PHASE 1: LINT (Static Analysis) ----------
+  lint:
+    name: 🔍 Lint & Analyze
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.44.1'
+
+      - run: flutter pub get
+
+      - name: Run Flutter Analyze (Linting)
+        run: flutter analyze --no-fatal-warnings --no-fatal-infos
+
+  # ---------- PHASE 2: UNIT TESTS (Mockito) ----------
+  unit-test:
+    name: 🧪 Unit Tests
+    needs: lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.44.1'
+
+      - run: flutter pub get
+      - run: flutter pub add --dev mockito build_runner
+
+      - name: Generate mocks & run tests
+        run: |
+          flutter pub run build_runner build --delete-conflicting-outputs
+          flutter test test/ --no-pub
+
+  # ---------- PHASE 3: INTEGRATION / E2E TESTS ----------
+  e2e-test:
+    name: 🧩 E2E / Integration Tests
+    needs: lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.44.1'
+
+      - run: flutter pub get
+
+      - name: Install Linux test dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libgtk-3-dev xvfb
+
+      - name: Run Integration / E2E Tests
+        run: |
+          xvfb-run -a flutter test -d linux integration_test/app_test.dart --no-pub
+          xvfb-run -a flutter test -d linux integration_test/auth_flow_test.dart --no-pub
+          xvfb-run -a flutter test -d linux integration_test/navigation_test.dart --no-pub
+
+  # ---------- PHASE 4: BUILD & PUSH IMAGE ----------
+  build-push:
+    name: 🐳 Build & Push Image
+    needs: [unit-test, e2e-test]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: google-github-actions/auth@v2
+        with:
+          credentials_json: ${{ secrets.GCP_CREDENTIALS }}
+
+      - uses: google-github-actions/setup-gcloud@v2
+
+      - name: Configure Docker for Artifact Registry
+        run: gcloud auth configure-docker ${{ secrets.GCP_REGION }}-docker.pkg.dev --quiet
+
+      - name: Build & Push image
+        run: |
+          IMAGE="${{ secrets.GCP_REGION }}-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/${{ secrets.ARTIFACT_REPO }}/pso"
+          docker build \
+            --build-arg SUPABASE_URL=${{ secrets.SUPABASE_URL }} \
+            --build-arg SUPABASE_ANON_KEY=${{ secrets.SUPABASE_ANON_KEY }} \
+            -t $IMAGE:${GITHUB_SHA} .
+          docker push $IMAGE:${GITHUB_SHA}
+
+  # ---------- PHASE 5: DEPLOY TO CLOUD RUN ----------
+  deploy:
+    name: 🚀 Deploy to Cloud Run
+    needs: build-push
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: google-github-actions/auth@v2
+        with:
+          credentials_json: ${{ secrets.GCP_CREDENTIALS }}
+
+      - uses: google-github-actions/setup-gcloud@v2
+
+      - name: Deploy to Cloud Run
+        run: |
+          IMAGE="${{ secrets.GCP_REGION }}-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/${{ secrets.ARTIFACT_REPO }}/pso"
+          gcloud run deploy my-app-service \
+            --image=$IMAGE:${GITHUB_SHA} \
+            --region=${{ secrets.GCP_REGION }} \
+            --allow-unauthenticated \
+            --port=8080
+
+  # ---------- PHASE 6: MONITORING (Uptime + Alert) ----------
+  monitor:
+    name: 📊 Setup Monitoring
+    needs: deploy
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: google-github-actions/auth@v2
+        with:
+          credentials_json: ${{ secrets.GCP_CREDENTIALS }}
+
+      - uses: google-github-actions/setup-gcloud@v2
+
+      - name: Create uptime check
+        run: |
+          SERVICE_URL=$(gcloud run services describe my-app-service \
+            --region=${{ secrets.GCP_REGION }} \
+            --project=${{ secrets.GCP_PROJECT_ID }} \
+            --format="value(status.url)")
+
+          # Extract the raw hostname by stripping the "https://" prefix
+          HOST_URL=${SERVICE_URL#https://}
+
+          # Create the uptime check using inline flags
+          gcloud monitoring uptime create "Flutter Web App Health" \
+            --project=${{ secrets.GCP_PROJECT_ID }} \
+            --resource-type="uptime-url" \
+            --resource-labels="host=$HOST_URL,project_id=${{ secrets.GCP_PROJECT_ID }}" \
+            --protocol="https" \
+            --path="/" \
+            --port=443 \
+            --timeout=10 \
+            --period=1
