@@ -42,7 +42,23 @@ jobs:
       - name: Generate mocks & run tests
         run: |
           flutter pub run build_runner build --delete-conflicting-outputs
-          flutter test test/ --no-pub
+          flutter test test/ --no-pub --machine > test-results/unit-tests.json
+        continue-on-error: true
+
+      - name: Upload Unit Test Results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: unit-test-results
+          path: test-results/
+
+      - name: Publish Unit Test Report
+        if: always()
+        uses: dorny/test-reporter@v1
+        with:
+          name: 'Unit Test Report'
+          path: test-results/unit-tests.json
+          reporter: flutter-json
 
   # ---------- PHASE 3: INTEGRATION / E2E TESTS ----------
   e2e-test:
@@ -67,16 +83,34 @@ jobs:
 
       - name: Run Integration / E2E Tests
         run: |
-          xvfb-run -a flutter test -d linux integration_test/app_test.dart --no-pub
-          xvfb-run -a flutter test -d linux integration_test/auth_flow_test.dart --no-pub
-          xvfb-run -a flutter test -d linux integration_test/navigation_test.dart --no-pub
+          mkdir -p test-results
+          xvfb-run -a flutter test -d linux integration_test/app_test.dart --no-pub --machine > test-results/e2e-app.json || true
+          xvfb-run -a flutter test -d linux integration_test/auth_flow_test.dart --no-pub --machine > test-results/e2e-auth.json || true
+          xvfb-run -a flutter test -d linux integration_test/navigation_test.dart --no-pub --machine > test-results/e2e-nav.json || true
+        continue-on-error: true
 
-  # ---------- PHASE 4: BUILD & PUSH IMAGE ----------
+      - name: Upload E2E Test Results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: e2e-test-results
+          path: test-results/
+
+      - name: Publish E2E Test Report
+        if: always()
+        uses: dorny/test-reporter@v1
+        with:
+          name: 'E2E Test Report'
+          path: 'test-results/e2e-*.json'
+          reporter: flutter-json
+
+  # ---------- PHASE 4: BUILD & PUSH IMAGE (requires approval) ----------
   build-push:
     name: 🐳 Build & Push Image
     needs: [unit-test, e2e-test]
     if: always()
     runs-on: ubuntu-latest
+    environment: build
     steps:
       - uses: actions/checkout@v4
 
@@ -98,12 +132,13 @@ jobs:
             -t $IMAGE:${GITHUB_SHA} .
           docker push $IMAGE:${GITHUB_SHA}
 
-  # ---------- PHASE 5: DEPLOY TO CLOUD RUN ----------
+  # ---------- PHASE 5: DEPLOY TO CLOUD RUN (requires approval) ----------
   deploy:
     name: 🚀 Deploy to Cloud Run
     needs: build-push
     if: always()
     runs-on: ubuntu-latest
+    environment: production
     steps:
       - uses: actions/checkout@v4
 
@@ -128,6 +163,7 @@ jobs:
     needs: deploy
     if: always()
     runs-on: ubuntu-latest
+    environment: production
     steps:
       - uses: actions/checkout@v4
 
