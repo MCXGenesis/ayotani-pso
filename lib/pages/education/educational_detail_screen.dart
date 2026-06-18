@@ -106,7 +106,7 @@ class _EducationalDetailScreenState extends State<EducationalDetailScreen> {
           ),
           const SizedBox(height: 8),
           Text(
-            _content!.description ?? '-',
+            _content!.description,
             style: TextStyle(color: Colors.grey[800], height: 1.5),
           ),
         ],

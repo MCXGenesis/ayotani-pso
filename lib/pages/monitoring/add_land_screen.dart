@@ -8,7 +8,6 @@ import '../../models/land_model.dart';
 import '../../services/land_service.dart';
 import '../../services/weather_service.dart';
 import '../../providers/auth_provider.dart';
-import '../../theme/app_colors.dart';
 
 class AddLandScreen extends StatefulWidget {
   const AddLandScreen({super.key});
