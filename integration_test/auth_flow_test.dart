@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:integration_test/integration_test.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -16,6 +17,19 @@ void main() {
     url: 'https://placeholder.supabase.co',
     anonKey: 'placeholder_key',
   );
+
+  // Suppress GoogleFonts async errors that occur after test completion
+  setUp(() {
+    GoogleFonts.config.allowRuntimeFetching = false;
+    final originalOnError = FlutterError.onError;
+    FlutterError.onError = (FlutterErrorDetails details) {
+      final msg = details.exception.toString();
+      if (msg.contains('GoogleFonts') || msg.contains('google_fonts')) {
+        return;
+      }
+      originalOnError?.call(details);
+    };
+  });
 
   group('E2E: Full Auth User Journey', () {
     testWidgets('Complete signup validation flow', (tester) async {
