@@ -43,6 +43,8 @@ jobs:
   # ---------- PHASE 1: LINT (Static Analysis) ----------
   lint:
     name: 🔍 Lint & Analyze
+    needs: protect-main
+    if: always()
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
