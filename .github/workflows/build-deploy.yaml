@@ -36,6 +36,26 @@ jobs:
       - name: Run Flutter Analyze (Linting)
         run: flutter analyze --no-fatal-warnings --no-fatal-infos --write=lint-results.txt || true
 
+      - name: Publish Lint Summary
+        if: always()
+        run: |
+          echo "## 🔍 Lint & Analyze Report" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          if [ -f lint-results.txt ]; then
+            ISSUES=$(wc -l < lint-results.txt)
+            if [ "$ISSUES" -eq 0 ]; then
+              echo "✅ **No issues found!**" >> $GITHUB_STEP_SUMMARY
+            else
+              echo "⚠️ **$ISSUES issue(s) found:**" >> $GITHUB_STEP_SUMMARY
+              echo "" >> $GITHUB_STEP_SUMMARY
+              echo '```' >> $GITHUB_STEP_SUMMARY
+              cat lint-results.txt >> $GITHUB_STEP_SUMMARY
+              echo '```' >> $GITHUB_STEP_SUMMARY
+            fi
+          else
+            echo "✅ **No issues found!**" >> $GITHUB_STEP_SUMMARY
+          fi
+
       - name: Upload Lint Report
         if: always()
         uses: actions/upload-artifact@v4
