@@ -16,7 +16,7 @@ void main() async {
 
   if (supabaseUrl.isEmpty || supabaseAnonKey.isEmpty) {
     debugPrint('⚠️ Missing SUPABASE_URL or SUPABASE_ANON_KEY. Falling back to local offline mock mode.');
-    await mock.main();
+    mock.main();
     return;
   }
 

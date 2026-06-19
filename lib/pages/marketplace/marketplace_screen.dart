@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:ayotani/theme/app_colors.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -9,7 +10,7 @@ import '../../routes/app_routes.dart';
 import 'product_detail_screen.dart';
 
 class MarketplaceScreen extends StatefulWidget {
-  const MarketplaceScreen({super.key});
+  MarketplaceScreen({super.key});
 
   @override
   State<MarketplaceScreen> createState() => _MarketplaceScreenState();
@@ -40,7 +41,7 @@ class _MarketplaceScreenState extends State<MarketplaceScreen> {
     _gemsFuture = _fetchUserGems();
     
     // Auto-scroll banner
-    _bannerTimer = Timer.periodic(const Duration(seconds: 5), (Timer timer) {
+    _bannerTimer = Timer.periodic(Duration(seconds: 5), (Timer timer) {
       if (_currentBannerIndex < _bannerImages.length - 1) {
         _currentBannerIndex++;
       } else {
@@ -49,7 +50,7 @@ class _MarketplaceScreenState extends State<MarketplaceScreen> {
       if (_bannerController.hasClients) {
         _bannerController.animateToPage(
           _currentBannerIndex,
-          duration: const Duration(milliseconds: 350),
+          duration: Duration(milliseconds: 350),
           curve: Curves.easeIn,
         );
       }
@@ -109,15 +110,15 @@ class _MarketplaceScreenState extends State<MarketplaceScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: context.scaffoldBg,
       appBar: AppBar(
-        backgroundColor: AppColors.green,
+        backgroundColor: context.primaryColor,
         elevation: 0,
         titleSpacing: 16,
         title: Container(
           height: 40,
           decoration: BoxDecoration(
-            color: Colors.white,
+            color: context.scaffoldBg,
             borderRadius: BorderRadius.circular(8),
           ),
           child: TextField(
@@ -127,30 +128,30 @@ class _MarketplaceScreenState extends State<MarketplaceScreen> {
             },
             decoration: InputDecoration(
               hintText: 'Cari Bibit Cabai Merah...',
-              hintStyle: TextStyle(color: Colors.grey[400], fontSize: 13),
-              prefixIcon: Icon(Icons.search, color: Colors.grey[400], size: 20),
+              hintStyle: TextStyle(color: context.textMuted, fontSize: 13),
+              prefixIcon: Icon(Icons.search, color: context.textMuted, size: 20),
               border: InputBorder.none,
-              contentPadding: const EdgeInsets.symmetric(vertical: 8),
+              contentPadding: EdgeInsets.symmetric(vertical: 8),
             ),
           ),
         ),
         actions: [
           IconButton(
-            icon: const Icon(Icons.notifications_outlined, color: Colors.white),
+            icon: Icon(Icons.notifications_outlined, color: context.scaffoldBg),
             onPressed: () {},
           ),
           IconButton(
-            icon: const Icon(Icons.shopping_cart_outlined, color: Colors.white),
+            icon: Icon(Icons.shopping_cart_outlined, color: context.scaffoldBg),
             onPressed: () => Navigator.pushNamed(context, AppRoutes.cart),
           ),
-          const SizedBox(width: 8),
+          SizedBox(width: 8),
         ],
       ),
       body: FutureBuilder<List<Product>>(
         future: _productsFuture,
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator(color: AppColors.green));
+            return Center(child: CircularProgressIndicator(color: context.primaryColor));
           }
           
           // Local filtering for immediate UI response
@@ -175,11 +176,11 @@ class _MarketplaceScreenState extends State<MarketplaceScreen> {
                       clipBehavior: Clip.none,
                       children: [
                         // Green Background Extension
-                        Container(height: 140, color: AppColors.green),
+                        Container(height: 140, color: context.primaryColor),
                         
                         // Scrolling Banner
                         Container(
-                          margin: const EdgeInsets.fromLTRB(16, 10, 16, 0),
+                          margin: EdgeInsets.fromLTRB(16, 10, 16, 0),
                           height: 150,
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(12),
@@ -200,7 +201,7 @@ class _MarketplaceScreenState extends State<MarketplaceScreen> {
                                     CachedNetworkImage(
                                       imageUrl: _bannerImages[index],
                                       fit: BoxFit.cover,
-                                      placeholder: (context, url) => Container(color: Colors.grey[300]),
+                                      placeholder: (context, url) => Container(color: context.dividerColor),
                                     ),
                                     Container(
                                       decoration: BoxDecoration(
@@ -210,27 +211,27 @@ class _MarketplaceScreenState extends State<MarketplaceScreen> {
                                           colors: [Colors.black.withOpacity(0.6), Colors.transparent],
                                         ),
                                       ),
-                                      padding: const EdgeInsets.all(20),
+                                      padding: EdgeInsets.all(20),
                                       child: Column(
                                         crossAxisAlignment: CrossAxisAlignment.start,
                                         mainAxisAlignment: MainAxisAlignment.center,
                                         children: [
-                                          const Text(
+                                          Text(
                                             'Gunakan pupuk Organik\nuntuk tanaman yang\nlebih sehat!',
                                             style: TextStyle(
-                                                color: Colors.white,
+                                                color: context.scaffoldBg,
                                                 fontWeight: FontWeight.bold,
                                                 fontSize: 14,
                                                 height: 1.3),
                                           ),
-                                          const SizedBox(height: 10),
+                                          SizedBox(height: 10),
                                           Container(
-                                            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                                            padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                                             decoration: BoxDecoration(
-                                                color: Colors.white, borderRadius: BorderRadius.circular(20)),
-                                            child: const Text('Beli Sekarang',
+                                                color: context.scaffoldBg, borderRadius: BorderRadius.circular(20)),
+                                            child: Text('Beli Sekarang',
                                                 style: TextStyle(
-                                                    color: AppColors.green,
+                                                    color: context.primaryColor,
                                                     fontSize: 12,
                                                     fontWeight: FontWeight.bold)),
                                           )
@@ -255,12 +256,12 @@ class _MarketplaceScreenState extends State<MarketplaceScreen> {
                               return Container(
                                 width: 8.0,
                                 height: 8.0,
-                                margin: const EdgeInsets.symmetric(horizontal: 4.0),
+                                margin: EdgeInsets.symmetric(horizontal: 4.0),
                                 decoration: BoxDecoration(
                                   shape: BoxShape.circle,
                                   color: _currentBannerIndex == entry.key
-                                      ? Colors.white
-                                      : Colors.white.withOpacity(0.4),
+                                      ? context.scaffoldBg
+                                      : context.scaffoldBg.withOpacity(0.4),
                                 ),
                               );
                             }).toList(),
@@ -273,15 +274,15 @@ class _MarketplaceScreenState extends State<MarketplaceScreen> {
                           left: 16,
                           right: 16,
                           child: Container(
-                            padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 20),
+                            padding: EdgeInsets.symmetric(vertical: 16, horizontal: 20),
                             decoration: BoxDecoration(
-                              color: Colors.white,
+                              color: context.scaffoldBg,
                               borderRadius: BorderRadius.circular(12),
                               boxShadow: [
                                 BoxShadow(
                                   color: Colors.black.withOpacity(0.08),
                                   blurRadius: 10,
-                                  offset: const Offset(0, 4),
+                                  offset: Offset(0, 4),
                                 ),
                               ],
                             ),
@@ -308,24 +309,24 @@ class _MarketplaceScreenState extends State<MarketplaceScreen> {
                   ),
 
                   // Spacer for the overlapping card
-                  const SliverToBoxAdapter(child: SizedBox(height: 60)),
+                  SliverToBoxAdapter(child: SizedBox(height: 60)),
 
                   // 2. Categories
                   SliverToBoxAdapter(
                     child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      padding: EdgeInsets.symmetric(horizontal: 16),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const Text('Category',
+                          Text('Category',
                               style: TextStyle(
                                   fontWeight: FontWeight.bold, fontSize: 16)),
-                          const SizedBox(height: 16),
+                          SizedBox(height: 16),
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              _buildCategoryItem('All', Icons.grid_view, Colors.grey[100]!),
+                              _buildCategoryItem('All', Icons.grid_view, context.dividerColor),
                               _buildCategoryItem('Seeds', Icons.grass, Colors.yellow[100]!),
                               _buildCategoryItem('Growth', Icons.eco, Colors.green[100]!), // Maps to 'Growth Promoters'
                               _buildCategoryItem('Tools', Icons.build, Colors.blue[100]!),
@@ -337,16 +338,16 @@ class _MarketplaceScreenState extends State<MarketplaceScreen> {
                     ),
                   ),
 
-                  const SliverToBoxAdapter(child: SizedBox(height: 24)),
+                  SliverToBoxAdapter(child: SizedBox(height: 24)),
 
                   // 3. Special Chip
                   SliverToBoxAdapter(
                     child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      padding: EdgeInsets.symmetric(horizontal: 16),
                       child: Align(
                         alignment: Alignment.centerLeft,
                         child: Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                          padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                           decoration: BoxDecoration(
                             color: Colors.teal[50],
                             borderRadius: BorderRadius.circular(20),
@@ -361,44 +362,44 @@ class _MarketplaceScreenState extends State<MarketplaceScreen> {
                     ),
                   ),
                   
-                  const SliverToBoxAdapter(child: SizedBox(height: 16)),
+                  SliverToBoxAdapter(child: SizedBox(height: 16)),
 
                   // 4. Flash Sale
                   SliverToBoxAdapter(
                     child: Column(
                       children: [
                         Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 16),
+                          padding: EdgeInsets.symmetric(horizontal: 16),
                           child: Row(
                             children: [
-                              const Text('FLASHSALE',
+                              Text('FLASHSALE',
                                   style: TextStyle(
                                       fontWeight: FontWeight.w900,
                                       fontSize: 18,
                                       color: Color(0xFF0A3D2F))),
-                              const Spacer(),
+                              Spacer(),
                               Row(
                                 children: [
                                   _buildTimerBox('02'),
-                                  const Text(' : ', style: TextStyle(fontWeight: FontWeight.bold)),
+                                  Text(' : ', style: TextStyle(fontWeight: FontWeight.bold)),
                                   _buildTimerBox('12'),
-                                  const Text(' : ', style: TextStyle(fontWeight: FontWeight.bold)),
+                                  Text(' : ', style: TextStyle(fontWeight: FontWeight.bold)),
                                   _buildTimerBox('45'),
                                 ],
                               ),
                             ],
                           ),
                         ),
-                        const SizedBox(height: 12),
+                        SizedBox(height: 12),
                         SizedBox(
                           height: 240,
                           child: ListView.builder(
-                            padding: const EdgeInsets.symmetric(horizontal: 16),
+                            padding: EdgeInsets.symmetric(horizontal: 16),
                             scrollDirection: Axis.horizontal,
                             // Use raw snapshot data here so flash sale always shows something regardless of filter
                             itemCount: (snapshot.data ?? []).length > 5 ? 5 : (snapshot.data ?? []).length,
                             itemBuilder: (context, index) {
-                               if (snapshot.data == null) return const SizedBox();
+                               if (snapshot.data == null) return SizedBox();
                                return _buildFlashSaleCard(context, snapshot.data![index]);
                             },
                           ),
@@ -407,16 +408,16 @@ class _MarketplaceScreenState extends State<MarketplaceScreen> {
                     ),
                   ),
 
-                  const SliverToBoxAdapter(child: SizedBox(height: 24)),
+                  SliverToBoxAdapter(child: SizedBox(height: 24)),
 
                   // 5. Recommendations Header
                   SliverToBoxAdapter(
                     child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                      padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          const Text('Rekomendasi Produk', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+                          Text('Rekomendasi Produk', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
                           if (_selectedCategory != 'All')
                             GestureDetector(
                               onTap: () => setState(() => _selectedCategory = 'All'),
@@ -431,12 +432,12 @@ class _MarketplaceScreenState extends State<MarketplaceScreen> {
                   products.isEmpty 
                   ? SliverToBoxAdapter(
                       child: Padding(
-                        padding: const EdgeInsets.all(32.0),
-                        child: Center(child: Text('Tidak ada produk kategori $_selectedCategory', style: const TextStyle(color: Colors.grey))),
+                        padding: EdgeInsets.all(32.0),
+                        child: Center(child: Text('Tidak ada produk kategori $_selectedCategory', style: TextStyle(color: context.bgGrey))),
                       ),
                     )
                   : SliverPadding(
-                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      padding: EdgeInsets.symmetric(horizontal: 16),
                       sliver: SliverGrid(
                         gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                           crossAxisCount: crossAxisCount,
@@ -453,7 +454,7 @@ class _MarketplaceScreenState extends State<MarketplaceScreen> {
                       ),
                     ),
 
-                  const SliverToBoxAdapter(child: SizedBox(height: 40)),
+                  SliverToBoxAdapter(child: SizedBox(height: 40)),
                 ],
               );
             }
@@ -464,7 +465,7 @@ class _MarketplaceScreenState extends State<MarketplaceScreen> {
   }
 
   Widget _buildVerticalDivider() {
-    return Container(width: 1, height: 24, color: Colors.grey[200]);
+    return Container(width: 1, height: 24, color: context.dividerColor);
   }
 
   Widget _buildWalletAction(IconData icon, String label) {
@@ -473,9 +474,9 @@ class _MarketplaceScreenState extends State<MarketplaceScreen> {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(icon, color: Colors.grey[700], size: 24),
-          const SizedBox(height: 4),
-          Text(label, style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600)),
+          Icon(icon, color: context.textSecondary, size: 24),
+          SizedBox(height: 4),
+          Text(label, style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600)),
         ],
       ),
     );
@@ -486,14 +487,14 @@ class _MarketplaceScreenState extends State<MarketplaceScreen> {
       onTap: () {}, // Action for Wallet buttons
       child: Row(
         children: [
-          Icon(icon, size: 20, color: AppColors.green),
-          const SizedBox(width: 8),
+          Icon(icon, size: 20, color: context.primaryColor),
+          SizedBox(width: 8),
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisSize: MainAxisSize.min,
             children: [
-              Text(value, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13)),
-              Text(label, style: TextStyle(fontSize: 11, color: Colors.grey[500])),
+              Text(value, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13)),
+              Text(label, style: TextStyle(fontSize: 11, color: context.textMuted)),
             ],
           ),
         ],
@@ -514,27 +515,27 @@ class _MarketplaceScreenState extends State<MarketplaceScreen> {
             width: 56,
             height: 56,
             decoration: BoxDecoration(
-              color: isSelected ? AppColors.green : Colors.white,
+              color: isSelected ? context.primaryColor : context.cardBg,
               borderRadius: BorderRadius.circular(16),
-              border: Border.all(color: isSelected ? AppColors.green : Colors.grey[200]!),
+              border: Border.all(color: isSelected ? context.primaryColor : context.dividerColor),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.grey.withOpacity(0.05),
+                  color: context.bgGrey.withOpacity(0.05),
                   blurRadius: 4,
-                  offset: const Offset(0, 2),
+                  offset: Offset(0, 2),
                 ),
               ],
             ),
-            child: Icon(icon, color: isSelected ? Colors.white : AppColors.green, size: 26),
+            child: Icon(icon, color: isSelected ? context.cardBg : context.primaryColor, size: 26),
           ),
-          const SizedBox(height: 8),
+          SizedBox(height: 8),
           Text(
             label, 
             textAlign: TextAlign.center,
             style: TextStyle(
               fontSize: 11, 
               fontWeight: isSelected ? FontWeight.bold : FontWeight.w500, 
-              color: isSelected ? AppColors.green : Colors.black87,
+              color: isSelected ? context.primaryColor : context.textPrimary,
               height: 1.2
             )
           ),
@@ -545,14 +546,14 @@ class _MarketplaceScreenState extends State<MarketplaceScreen> {
 
   Widget _buildTimerBox(String text) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
+      padding: EdgeInsets.symmetric(horizontal: 6, vertical: 4),
       decoration: BoxDecoration(
-        color: const Color(0xFF0A3D2F),
+        color: Color(0xFF0A3D2F),
         borderRadius: BorderRadius.circular(4),
       ),
       child: Text(
         text, 
-        style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 12)
+        style: TextStyle(color: context.cardBg, fontWeight: FontWeight.bold, fontSize: 12)
       ),
     );
   }
@@ -562,11 +563,11 @@ class _MarketplaceScreenState extends State<MarketplaceScreen> {
       onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => ProductDetailScreen(product: product))),
       child: Container(
         width: 140,
-        margin: const EdgeInsets.only(right: 12),
+        margin: EdgeInsets.only(right: 12),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: context.cardBg,
           borderRadius: BorderRadius.circular(10),
-          border: Border.all(color: Colors.grey[200]!),
+          border: Border.all(color: context.dividerColor),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -574,55 +575,55 @@ class _MarketplaceScreenState extends State<MarketplaceScreen> {
             Stack(
               children: [
                 ClipRRect(
-                  borderRadius: const BorderRadius.vertical(top: Radius.circular(10)),
+                  borderRadius: BorderRadius.vertical(top: Radius.circular(10)),
                   child: CachedNetworkImage(
                     imageUrl: product.imageUrl ?? '',
                     height: 120,
                     width: double.infinity,
                     fit: BoxFit.cover,
-                    placeholder: (_,__) => Container(color: Colors.grey[100]),
-                    errorWidget: (_,__,___) => Container(color: Colors.grey[100], child: const Icon(Icons.image)),
+                    placeholder: (_,__) => Container(color: context.dividerColor),
+                    errorWidget: (_,__,___) => Container(color: context.dividerColor, child: Icon(Icons.image)),
                   ),
                 ),
                 Positioned(
                   top: 8,
                   left: 8,
                   child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                    padding: EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                     decoration: BoxDecoration(
                       color: Colors.red,
                       borderRadius: BorderRadius.circular(4),
                     ),
-                    child: const Text('42%', style: TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.bold)),
+                    child: Text('42%', style: TextStyle(color: context.cardBg, fontSize: 10, fontWeight: FontWeight.bold)),
                   ),
                 ),
               ],
             ),
             Padding(
-              padding: const EdgeInsets.all(8.0),
+              padding: EdgeInsets.all(8.0),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
-                    decoration: BoxDecoration(color: Colors.grey[200], borderRadius: BorderRadius.circular(2)),
-                    child: Text(product.categoryDisplay, style: const TextStyle(fontSize: 9, color: Colors.grey)),
+                    padding: EdgeInsets.symmetric(horizontal: 4, vertical: 2),
+                    decoration: BoxDecoration(color: context.dividerColor, borderRadius: BorderRadius.circular(2)),
+                    child: Text(product.categoryDisplay, style: TextStyle(fontSize: 9, color: context.bgGrey)),
                   ),
-                  const SizedBox(height: 4),
+                  SizedBox(height: 4),
                   Text(
                     product.name, 
                     maxLines: 2, 
                     overflow: TextOverflow.ellipsis,
-                    style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold, height: 1.2),
+                    style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, height: 1.2),
                   ),
-                  const SizedBox(height: 4),
+                  SizedBox(height: 4),
                   Text(
                     'Rp${product.price.toStringAsFixed(0)}', 
-                    style: const TextStyle(fontSize: 13, fontWeight: FontWeight.bold, color: AppColors.green)
+                    style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold, color: context.primaryColor)
                   ),
                   Text(
                     'Rp${(product.price * 1.4).toStringAsFixed(0)}',
-                    style: TextStyle(fontSize: 10, color: Colors.grey[400], decoration: TextDecoration.lineThrough)
+                    style: TextStyle(fontSize: 10, color: context.textMuted, decoration: TextDecoration.lineThrough)
                   ),
                 ],
               ),
@@ -638,14 +639,14 @@ class _MarketplaceScreenState extends State<MarketplaceScreen> {
       onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => ProductDetailScreen(product: product))),
       child: Container(
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: context.cardBg,
           borderRadius: BorderRadius.circular(10),
-          border: Border.all(color: Colors.grey[200]!),
+          border: Border.all(color: context.dividerColor),
           boxShadow: [
             BoxShadow(
-              color: Colors.grey.withOpacity(0.05),
+              color: context.bgGrey.withOpacity(0.05),
               blurRadius: 4,
-              offset: const Offset(0, 2),
+              offset: Offset(0, 2),
             )
           ],
         ),
@@ -656,55 +657,55 @@ class _MarketplaceScreenState extends State<MarketplaceScreen> {
               child: Stack(
                 children: [
                   ClipRRect(
-                    borderRadius: const BorderRadius.vertical(top: Radius.circular(10)),
+                    borderRadius: BorderRadius.vertical(top: Radius.circular(10)),
                     child: CachedNetworkImage(
                       imageUrl: product.imageUrl ?? '',
                       width: double.infinity,
                       fit: BoxFit.cover,
-                      placeholder: (_,__) => Container(color: Colors.grey[100]),
-                      errorWidget: (_,__,___) => Container(color: Colors.grey[100], child: const Icon(Icons.image)),
+                      placeholder: (_,__) => Container(color: context.dividerColor),
+                      errorWidget: (_,__,___) => Container(color: context.dividerColor, child: Icon(Icons.image)),
                     ),
                   ),
-                  const Positioned(
+                  Positioned(
                     top: 8,
                     right: 8,
-                    child: Icon(Icons.favorite_border, color: Colors.grey, size: 20),
+                    child: Icon(Icons.favorite_border, color: context.bgGrey, size: 20),
                   ),
                 ],
               ),
             ),
             Padding(
-              padding: const EdgeInsets.all(10),
+              padding: EdgeInsets.all(10),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                    padding: EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                     decoration: BoxDecoration(
-                      color: Colors.grey[100],
+                      color: context.dividerColor,
                       borderRadius: BorderRadius.circular(4),
                     ),
-                    child: Text(product.categoryDisplay, style: const TextStyle(fontSize: 10, color: Colors.grey)),
+                    child: Text(product.categoryDisplay, style: TextStyle(fontSize: 10, color: context.bgGrey)),
                   ),
-                  const SizedBox(height: 4),
+                  SizedBox(height: 4),
                   Text(
                     product.name,
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
-                    style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13, height: 1.2),
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13, height: 1.2),
                   ),
-                  const SizedBox(height: 4),
+                  SizedBox(height: 4),
                   Row(
                     children: [
-                      const Icon(Icons.star, size: 12, color: Colors.amber),
-                      const SizedBox(width: 2),
-                      Text(product.rating.toString(), style: const TextStyle(fontSize: 10, color: Colors.grey)),
+                      Icon(Icons.star, size: 12, color: Colors.amber),
+                      SizedBox(width: 2),
+                      Text(product.rating.toString(), style: TextStyle(fontSize: 10, color: context.bgGrey)),
                     ],
                   ),
-                  const SizedBox(height: 6),
+                  SizedBox(height: 6),
                   Text(
                     'Rp${product.price.toStringAsFixed(0)}',
-                    style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14, color: AppColors.green),
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14, color: context.primaryColor),
                   ),
                 ],
               ),

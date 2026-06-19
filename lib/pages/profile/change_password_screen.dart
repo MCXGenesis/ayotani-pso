@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:ayotani/theme/app_colors.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../theme/app_colors.dart';
 
 class ChangePasswordScreen extends StatefulWidget {
-  const ChangePasswordScreen({super.key});
+  ChangePasswordScreen({super.key});
 
   @override
   State<ChangePasswordScreen> createState() => _ChangePasswordScreenState();
@@ -17,11 +18,11 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
 
   Future<void> _changePassword() async {
     if (_passwordController.text != _confirmController.text) {
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Password tidak sama!')));
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Password tidak sama!')));
       return;
     }
     if (_passwordController.text.length < 6) {
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Password minimal 6 karakter')));
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Password minimal 6 karakter')));
       return;
     }
 
@@ -35,7 +36,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
       if (mounted) {
         Navigator.pop(context);
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Password berhasil diganti! Gunakan password baru saat login nanti')),
+          SnackBar(content: Text('Password berhasil diganti! Gunakan password baru saat login nanti')),
         );
       }
     } catch (e) {
@@ -50,33 +51,33 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: context.scaffoldBg,
       appBar: AppBar(
-        title: Text('Ganti Password', style: GoogleFonts.inter(color: Colors.black)),
-        backgroundColor: Colors.white,
+        title: Text('Ganti Password', style: GoogleFonts.inter(color: context.textPrimary)),
+        backgroundColor: context.scaffoldBg,
         elevation: 0,
-        iconTheme: const IconThemeData(color: Colors.black),
+        iconTheme: IconThemeData(color: Colors.black),
       ),
       body: Padding(
-        padding: const EdgeInsets.all(24.0),
+        padding: EdgeInsets.all(24.0),
         child: Column(
           children: [
             _buildPassField("Password Baru", _passwordController),
-            const SizedBox(height: 20),
+            SizedBox(height: 20),
             _buildPassField("Konfirmasi Password", _confirmController),
-            const SizedBox(height: 40),
+            SizedBox(height: 40),
             SizedBox(
               width: double.infinity,
               height: 50,
               child: ElevatedButton(
                 onPressed: _isLoading ? null : _changePassword,
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.green,
+                  backgroundColor: context.primaryColor,
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                 ),
                 child: _isLoading
-                    ? const CircularProgressIndicator(color: Colors.white)
-                    : Text("Update Password", style: GoogleFonts.inter(color: Colors.white, fontWeight: FontWeight.bold)),
+                    ? CircularProgressIndicator(color: context.scaffoldBg)
+                    : Text("Update Password", style: GoogleFonts.inter(color: context.scaffoldBg, fontWeight: FontWeight.bold)),
               ),
             ),
           ],
@@ -90,16 +91,16 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(label, style: GoogleFonts.inter(fontWeight: FontWeight.bold, fontSize: 14)),
-        const SizedBox(height: 8),
+        SizedBox(height: 8),
         TextField(
           controller: controller,
           obscureText: true,
           decoration: InputDecoration(
-            prefixIcon: const Icon(Icons.lock_outline, color: Colors.grey),
+            prefixIcon: Icon(Icons.lock_outline, color: context.textMuted),
             border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
-              borderSide: BorderSide(color: AppColors.green, width: 2),
+              borderSide: BorderSide(color: context.primaryColor, width: 2),
             ),
           ),
         ),

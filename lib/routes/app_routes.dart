@@ -25,6 +25,7 @@ import '../pages/news/comments_page.dart';
 import '../models/comment_model.dart';
 import '../pages/news/article_list_screen.dart';
 import '../pages/profile/customer_service_screen.dart';
+import '../pages/weather/weather_screen.dart';
 
 class AppRoutes {
   static const splash = '/splash';
@@ -54,21 +55,22 @@ class AppRoutes {
   static const monitoring = '/monitoring';
   static const landList = '/land-list';
   static const addLand = '/add-land';
+  static const weather = '/weather';
 
   static Map<String, WidgetBuilder> get routes => {
-        splash: (_) => const SplashScreen(),
-        login: (_) => const LoginPage(),
-        signup: (_) => const SignupPage(),
+        splash: (_) => SplashScreen(),
+        login: (_) => LoginPage(),
+        signup: (_) => SignupPage(),
         onboarding: (context) {
           final userId = ModalRoute.of(context)?.settings.arguments as String?;
           return OnboardingPage(userId: userId ?? '');
         },
-        home: (_) => const HomeScreen(),
-        profile: (_) => const ProfilePage(),
-        marketplace: (_) => const MarketplaceScreen(),
-        cart: (_) => const ShoppingCartScreen(),
-        checkout: (_) => const CheckoutScreen(),
-        paymentMethod: (_) => const PaymentMethodScreen(),
+        home: (_) => HomeScreen(),
+        profile: (_) => ProfilePage(),
+        marketplace: (_) => MarketplaceScreen(),
+        cart: (_) => ShoppingCartScreen(),
+        checkout: (_) => CheckoutScreen(),
+        paymentMethod: (_) => PaymentMethodScreen(),
         payment: (context) {
           final args = ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?;
           return PaymentScreen(
@@ -76,18 +78,18 @@ class AppRoutes {
             paymentMethod: args?['paymentMethod'] as String? ?? 'Unknown',
           );
         },
-        paymentDone: (_) => const PaymentDoneScreen(),
-        educational: (_) => const EducationalListScreen(),
+        paymentDone: (_) => PaymentDoneScreen(),
+        educational: (_) => EducationalListScreen(),
         educationalDetail: (context) {
           final args = ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?;
           final id = args?['id'] as int? ?? 0;
           return EducationalDetailScreen(contentId: id);
         },
-        editProfile: (_) => const EditProfileScreen(),
-        changePassword: (_) => const ChangePasswordScreen(),
-        notifications: (_) => const NotificationScreen(),
-        terms: (_) => const TermsScreen(),
-        customerService: (_) => const CustomerServiceScreen(),
+        editProfile: (_) => EditProfileScreen(),
+        changePassword: (_) => ChangePasswordScreen(),
+        notifications: (_) => NotificationScreen(),
+        terms: (_) => TermsScreen(),
+        customerService: (_) => CustomerServiceScreen(),
         
         // Updated News Article Route to accept ID
         newsArticle: (context) {
@@ -97,7 +99,7 @@ class AppRoutes {
         },
         
         // NEW Article List Route
-        articleList: (_) => const ArticleListScreen(),
+        articleList: (_) => ArticleListScreen(),
 
         comments: (context) {
           final args = ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?;
@@ -107,8 +109,15 @@ class AppRoutes {
           );
         },
         
-        landList: (_) => const LandListScreen(),
-        addLand: (_) => const AddLandScreen(),
+        landList: (_) => LandListScreen(),
+        weather: (context) {
+          final args = ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?;
+          return WeatherScreen(
+            initialLat: args?['lat'] as double?,
+            initialLon: args?['lon'] as double?,
+          );
+        },
+        addLand: (_) => AddLandScreen(),
         monitoring: (context) {
           final args = ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?;
           final initialLandId = args?['landId'] as int?;

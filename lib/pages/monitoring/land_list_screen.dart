@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:ayotani/theme/app_colors.dart';
 import 'package:provider/provider.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -10,7 +11,7 @@ import '../../routes/app_routes.dart';
 import '../../theme/app_colors.dart';
 
 class LandListScreen extends StatefulWidget {
-  const LandListScreen({super.key});
+  LandListScreen({super.key});
 
   @override
   State<LandListScreen> createState() => _LandListScreenState();
@@ -43,13 +44,13 @@ class _LandListScreenState extends State<LandListScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Lahan Pertanian Saya', style: GoogleFonts.inter(fontWeight: FontWeight.bold, color: Colors.black)),
-        backgroundColor: Colors.white,
+        title: Text('Lahan Pertanian Saya', style: GoogleFonts.inter(fontWeight: FontWeight.bold, color: context.textPrimary)),
+        backgroundColor: context.scaffoldBg,
         elevation: 0,
-        iconTheme: const IconThemeData(color: Colors.black),
+        iconTheme: IconThemeData(color: Colors.black),
         actions: [
           IconButton(
-            icon: const Icon(Icons.add),
+            icon: Icon(Icons.add),
             onPressed: () {
                // Use a named route or push directly to add land
                // For now we just refresh after return
@@ -58,13 +59,13 @@ class _LandListScreenState extends State<LandListScreen> {
           )
         ],
       ),
-      backgroundColor: Colors.white,
+      backgroundColor: context.scaffoldBg,
       body: _isLoading 
-          ? const Center(child: CircularProgressIndicator(color: AppColors.green))
+          ? Center(child: CircularProgressIndicator(color: context.primaryColor))
           : _lands.isEmpty 
               ? Center(child: Text("Belum ada lahan.", style: GoogleFonts.inter()))
               : ListView.builder(
-                  padding: const EdgeInsets.only(bottom: 20),
+                  padding: EdgeInsets.only(bottom: 20),
                   itemCount: _lands.length,
                   itemBuilder: (context, index) {
                     return _LandCardItem(land: _lands[index]);
@@ -120,18 +121,18 @@ class _LandCardItemState extends State<_LandCardItem> {
         );
       },
       child: Container(
-        margin: const EdgeInsets.fromLTRB(16, 16, 16, 0),
+        margin: EdgeInsets.fromLTRB(16, 16, 16, 0),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: context.cardBg,
           borderRadius: BorderRadius.circular(12),
-          boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 10, offset: const Offset(0, 4))],
+          boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 10, offset: Offset(0, 4))],
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // 1. Thumbnail (Map Snapshot)
             ClipRRect(
-              borderRadius: const BorderRadius.vertical(top: Radius.circular(12)),
+              borderRadius: BorderRadius.vertical(top: Radius.circular(12)),
               child: Stack(
                 children: [
                   CachedNetworkImage(
@@ -139,29 +140,29 @@ class _LandCardItemState extends State<_LandCardItem> {
                     height: 180,
                     width: double.infinity,
                     fit: BoxFit.cover,
-                    placeholder: (context, url) => Container(height: 180, color: Colors.grey[200]),
-                    errorWidget: (context, url, error) => Container(height: 180, color: Colors.grey[300], child: const Icon(Icons.broken_image)),
+                    placeholder: (context, url) => Container(height: 180, color: context.dividerColor),
+                    errorWidget: (context, url, error) => Container(height: 180, color: context.dividerColor, child: Icon(Icons.broken_image)),
                   ),
                   Positioned(
                     bottom: 10,
                     right: 10,
                     child: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                      padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                       decoration: BoxDecoration(color: Colors.black.withOpacity(0.7), borderRadius: BorderRadius.circular(4)),
-                      child: Text('${land.areaSize} Ha', style: const TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.bold)),
+                      child: Text('${land.areaSize} Ha', style: TextStyle(color: context.cardBg, fontSize: 10, fontWeight: FontWeight.bold)),
                     ),
                   ),
                   Positioned(
                     top: 10,
                     right: 10,
                     child: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                      decoration: BoxDecoration(color: Colors.white.withOpacity(0.9), borderRadius: BorderRadius.circular(12)),
+                      padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                      decoration: BoxDecoration(color: context.cardBg.withOpacity(0.9), borderRadius: BorderRadius.circular(12)),
                       child: Row(
                         children: [
-                          const Icon(Icons.wb_sunny, size: 14, color: Colors.orange),
-                          const SizedBox(width: 4),
-                          Text('$temp°C', style: const TextStyle(fontSize: 10, fontWeight: FontWeight.bold)),
+                          Icon(Icons.wb_sunny, size: 14, color: Colors.orange),
+                          SizedBox(width: 4),
+                          Text('$temp°C', style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold)),
                         ],
                       ),
                     ),
@@ -172,17 +173,17 @@ class _LandCardItemState extends State<_LandCardItem> {
             
             // 2. Info Content
             Padding(
-              padding: const EdgeInsets.all(12),
+              padding: EdgeInsets.all(12),
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   // Avatar Icon
-                  const CircleAvatar(
+                  CircleAvatar(
                     radius: 18,
                     backgroundColor: Color(0xFFE8F5E9),
                     child: Icon(Icons.agriculture, color: Color(0xFF0A3D2F), size: 20),
                   ),
-                  const SizedBox(width: 12),
+                  SizedBox(width: 12),
                   // Text Info
                   Expanded(
                     child: Column(
@@ -194,21 +195,21 @@ class _LandCardItemState extends State<_LandCardItem> {
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                         ),
-                        const SizedBox(height: 2),
+                        SizedBox(height: 2),
                         Text(
                           land.location ?? 'Lokasi tidak diketahui',
-                          style: GoogleFonts.inter(color: Colors.grey[600], fontSize: 12),
+                          style: GoogleFonts.inter(color: context.textSecondary, fontSize: 12),
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                         ),
-                        const SizedBox(height: 8),
+                        SizedBox(height: 8),
                         // Financial Summary Row
                         Container(
-                          padding: const EdgeInsets.all(8),
+                          padding: EdgeInsets.all(8),
                           decoration: BoxDecoration(
-                            color: const Color(0xFFF9F9F9),
+                            color: Color(0xFFF9F9F9),
                             borderRadius: BorderRadius.circular(8),
-                            border: Border.all(color: Colors.grey[200]!)
+                            border: Border.all(color: context.dividerColor)
                           ),
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -235,8 +236,8 @@ class _LandCardItemState extends State<_LandCardItem> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(label, style: const TextStyle(fontSize: 10, color: Colors.grey)),
-        Text(value, style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: color ?? Colors.black87)),
+        Text(label, style: TextStyle(fontSize: 10, color: context.textMuted)),
+        Text(value, style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: color ?? context.textPrimary)),
       ],
     );
   }

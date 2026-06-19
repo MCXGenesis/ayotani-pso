@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:ayotani/theme/app_colors.dart';
 import '../../models/educational_content_model.dart';
 import '../../services/educational_service.dart';
 import '../../theme/app_colors.dart';
 import '../../routes/app_routes.dart';
 
 class EducationalListScreen extends StatefulWidget {
-  const EducationalListScreen({super.key});
+  EducationalListScreen({super.key});
 
   @override
   State<EducationalListScreen> createState() => _EducationalListScreenState();
@@ -35,36 +36,36 @@ class _EducationalListScreenState extends State<EducationalListScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: context.scaffoldBg,
       appBar: AppBar(
-        title: const Text('Video Belajar', style: TextStyle(fontWeight: FontWeight.w700)),
-        backgroundColor: Colors.white,
+        title: Text('Video Belajar', style: TextStyle(fontWeight: FontWeight.w700)),
+        backgroundColor: context.scaffoldBg,
         elevation: 0,
         foregroundColor: Colors.black,
       ),
       body: Column(
         children: [
-          const SizedBox(height: 8),
+          SizedBox(height: 8),
           _buildFilter(),
-          const SizedBox(height: 8),
+          SizedBox(height: 8),
           Expanded(
             child: FutureBuilder<List<EducationalContent>>(
               future: _future,
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
-                  return const Center(child: CircularProgressIndicator(color: AppColors.green));
+                  return Center(child: CircularProgressIndicator(color: context.primaryColor));
                 }
 
                 final items = snapshot.data ?? [];
                 if (items.isEmpty) {
-                  return const Center(child: Text('Video belajar belum tersedia'));
+                  return Center(child: Text('Video belajar belum tersedia'));
                 }
 
                 return RefreshIndicator(
                   onRefresh: () async => _reload(),
                   child: GridView.builder(
-                    padding: const EdgeInsets.all(16),
-                    gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    padding: EdgeInsets.all(16),
+                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                       crossAxisCount: 2,
                       childAspectRatio: 0.85,
                       crossAxisSpacing: 12,
@@ -97,9 +98,9 @@ class _EducationalListScreenState extends State<EducationalListScreen> {
     return SizedBox(
       height: 42,
       child: ListView.separated(
-        padding: const EdgeInsets.symmetric(horizontal: 16),
+        padding: EdgeInsets.symmetric(horizontal: 16),
         scrollDirection: Axis.horizontal,
-        separatorBuilder: (_, __) => const SizedBox(width: 10),
+        separatorBuilder: (_, __) => SizedBox(width: 10),
         itemCount: options.length,
         itemBuilder: (_, i) {
           final v = options[i];
@@ -110,15 +111,15 @@ class _EducationalListScreenState extends State<EducationalListScreen> {
               _reload();
             },
             child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 10),
+              padding: EdgeInsets.symmetric(horizontal: 18, vertical: 10),
               decoration: BoxDecoration(
-                color: selected ? const Color(0xFF0A3D2F) : const Color(0xFFF1F3F2),
+                color: selected ? Color(0xFF0A3D2F) : Color(0xFFF1F3F2),
                 borderRadius: BorderRadius.circular(20),
               ),
               child: Text(
                 v == 'All' ? 'All' : v,
                 style: TextStyle(
-                  color: selected ? Colors.white : Colors.black54,
+                  color: selected ? context.cardBg : context.textSecondary,
                   fontWeight: FontWeight.w700,
                   fontSize: 12,
                 ),
@@ -146,29 +147,29 @@ class _VideoCard extends StatelessWidget {
       borderRadius: BorderRadius.circular(14),
       child: Container(
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: context.cardBg,
           borderRadius: BorderRadius.circular(14),
-          border: Border.all(color: Colors.grey[200]!),
+          border: Border.all(color: context.dividerColor),
           // FIX: Replaced withOpacity with withValues for Flutter 3.27+
-          boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.04), blurRadius: 6, offset: const Offset(0, 3))],
+          boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.04), blurRadius: 6, offset: Offset(0, 3))],
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // Thumbnail
             ClipRRect(
-              borderRadius: const BorderRadius.vertical(top: Radius.circular(14)),
+              borderRadius: BorderRadius.vertical(top: Radius.circular(14)),
               child: Container(
                 height: 110,
                 width: double.infinity,
-                color: Colors.grey[200],
+                color: context.dividerColor,
                 child: item.thumbnailUrl != null && item.thumbnailUrl!.isNotEmpty
                     ? Image.network(item.thumbnailUrl!, fit: BoxFit.cover)
-                    : const Center(child: Icon(Icons.play_circle_fill, size: 44, color: Colors.black54)),
+                    : Center(child: Icon(Icons.play_circle_fill, size: 44, color: context.textSecondary)),
               ),
             ),
             Padding(
-              padding: const EdgeInsets.all(10),
+              padding: EdgeInsets.all(10),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -176,19 +177,19 @@ class _VideoCard extends StatelessWidget {
                     item.title,
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
-                    style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 12),
+                    style: TextStyle(fontWeight: FontWeight.w800, fontSize: 12),
                   ),
-                  const SizedBox(height: 8),
+                  SizedBox(height: 8),
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                    padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                     decoration: BoxDecoration(
                       // FIX: Replaced withOpacity with withValues
-                      color: AppColors.green.withValues(alpha: 0.10),
+                      color: context.primaryColor.withValues(alpha: 0.10),
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: Text(
                       difficultyText,
-                      style: const TextStyle(color: AppColors.green, fontWeight: FontWeight.w700, fontSize: 10),
+                      style: TextStyle(color: context.primaryColor, fontWeight: FontWeight.w700, fontSize: 10),
                     ),
                   ),
                 ],

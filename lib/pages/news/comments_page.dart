@@ -2,13 +2,14 @@
 // HALAMAN FULL COMMENTS dengan list semua comments dan input box
 
 import 'package:flutter/material.dart';
+import 'package:ayotani/theme/app_colors.dart';
 import '../../models/comment_model.dart';
 
 class CommentsPage extends StatefulWidget {
   final List<Comment> comments;
   final int commentCount;
 
-  const CommentsPage({
+  CommentsPage({
     Key? key,
     required this.comments,
     required this.commentCount,
@@ -49,18 +50,18 @@ class _CommentsPageState extends State<CommentsPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: context.scaffoldBg,
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        backgroundColor: context.scaffoldBg,
         elevation: 1,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.black),
+          icon: Icon(Icons.arrow_back, color: context.textPrimary),
           onPressed: () => Navigator.pop(context),
         ),
-        title: const Text(
+        title: Text(
           'Comments',
           style: TextStyle(
-            color: Colors.black,
+            color: context.textPrimary,
             fontSize: 18,
             fontWeight: FontWeight.w600,
           ),
@@ -78,21 +79,21 @@ class _CommentsPageState extends State<CommentsPage> {
 
   Widget _buildCommentsHeader() {
     return Padding(
-      padding: const EdgeInsets.all(16),
+      padding: EdgeInsets.all(16),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Text(
             '${_comments.length} Comments',
-            style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 16),
+            style: TextStyle(fontWeight: FontWeight.w600, fontSize: 16),
           ),
           Row(
             children: [
               Text(
                 'All Comments',
-                style: TextStyle(color: Colors.grey[600], fontSize: 14),
+                style: TextStyle(color: context.textSecondary, fontSize: 14),
               ),
-              Icon(Icons.keyboard_arrow_down, color: Colors.grey[600], size: 20),
+              Icon(Icons.keyboard_arrow_down, color: context.textSecondary, size: 20),
             ],
           ),
         ],
@@ -103,11 +104,11 @@ class _CommentsPageState extends State<CommentsPage> {
   Widget _buildCommentsList() {
     return Expanded(
       child: ListView.builder(
-        padding: const EdgeInsets.symmetric(horizontal: 16),
+        padding: EdgeInsets.symmetric(horizontal: 16),
         itemCount: _comments.length,
         itemBuilder: (context, index) {
           return Padding(
-            padding: const EdgeInsets.only(bottom: 20),
+            padding: EdgeInsets.only(bottom: 20),
             child: _buildCommentWithReplies(_comments[index]),
           );
         },
@@ -118,32 +119,32 @@ class _CommentsPageState extends State<CommentsPage> {
   Widget _buildCommentInput() {
     return Container(
       decoration: BoxDecoration(
-        color: Colors.white,
-        border: Border(top: BorderSide(color: Colors.grey[300]!)),
+        color: context.cardBg,
+        border: Border(top: BorderSide(color: context.dividerColor)),
       ),
-      padding: const EdgeInsets.all(16),
+      padding: EdgeInsets.all(16),
       child: SafeArea(
         child: Row(
           children: [
             CircleAvatar(
               radius: 20,
-              backgroundColor: Colors.grey[300],
-              child: Icon(Icons.person, color: Colors.grey[600], size: 24),
+              backgroundColor: context.dividerColor,
+              child: Icon(Icons.person, color: context.textSecondary, size: 24),
             ),
-            const SizedBox(width: 12),
+            SizedBox(width: 12),
             Expanded(
               child: TextField(
                 controller: _commentController,
                 decoration: InputDecoration(
                   hintText: 'Type message',
-                  hintStyle: TextStyle(color: Colors.grey[400]),
+                  hintStyle: TextStyle(color: context.textMuted),
                   filled: true,
-                  fillColor: Colors.grey[100],
+                  fillColor: context.dividerColor,
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(25),
                     borderSide: BorderSide.none,
                   ),
-                  contentPadding: const EdgeInsets.symmetric(
+                  contentPadding: EdgeInsets.symmetric(
                     horizontal: 16,
                     vertical: 10,
                   ),
@@ -151,10 +152,10 @@ class _CommentsPageState extends State<CommentsPage> {
                 onSubmitted: (_) => _sendComment(),
               ),
             ),
-            const SizedBox(width: 12),
+            SizedBox(width: 12),
             IconButton(
               onPressed: _sendComment,
-              icon: const Icon(Icons.send, color: Colors.blue),
+              icon: Icon(Icons.send, color: Colors.blue),
             ),
           ],
         ),
@@ -169,11 +170,11 @@ class _CommentsPageState extends State<CommentsPage> {
         _buildCommentItem(comment, false),
         if (comment.replies.isNotEmpty)
           Padding(
-            padding: const EdgeInsets.only(left: 48, top: 12),
+            padding: EdgeInsets.only(left: 48, top: 12),
             child: Column(
               children: comment.replies
                   .map((reply) => Padding(
-                        padding: const EdgeInsets.only(bottom: 12),
+                        padding: EdgeInsets.only(bottom: 12),
                         child: _buildCommentItem(reply, true),
                       ))
                   .toList(),
@@ -189,14 +190,14 @@ class _CommentsPageState extends State<CommentsPage> {
       children: [
         CircleAvatar(
           radius: isReply ? 16 : 20,
-          backgroundColor: Colors.grey[300],
+          backgroundColor: context.dividerColor,
           child: Icon(
             Icons.person,
-            color: Colors.grey[600],
+            color: context.textSecondary,
             size: isReply ? 18 : 24,
           ),
         ),
-        const SizedBox(width: 12),
+        SizedBox(width: 12),
         Expanded(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -205,43 +206,43 @@ class _CommentsPageState extends State<CommentsPage> {
                 children: [
                   Text(
                     comment.author,
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontWeight: FontWeight.w600,
                       fontSize: 14,
                     ),
                   ),
-                  const SizedBox(width: 8),
+                  SizedBox(width: 8),
                   Text(
                     comment.time,
                     style: TextStyle(
-                      color: Colors.grey[600],
+                      color: context.textSecondary,
                       fontSize: 12,
                     ),
                   ),
                 ],
               ),
-              const SizedBox(height: 6),
+              SizedBox(height: 6),
               Text(
                 comment.text,
                 style: TextStyle(
                   fontSize: 14,
-                  color: Colors.grey[800],
+                  color: context.textPrimary,
                   height: 1.4,
                 ),
               ),
-              const SizedBox(height: 8),
+              SizedBox(height: 8),
               Row(
                 children: [
-                  Icon(Icons.thumb_up_outlined, size: 14, color: Colors.grey[600]),
-                  const SizedBox(width: 4),
+                  Icon(Icons.thumb_up_outlined, size: 14, color: context.textSecondary),
+                  SizedBox(width: 4),
                   Text(
                     '${comment.likes}',
-                    style: TextStyle(fontSize: 12, color: Colors.grey[600]),
+                    style: TextStyle(fontSize: 12, color: context.textSecondary),
                   ),
-                  const SizedBox(width: 16),
+                  SizedBox(width: 16),
                   Text(
                     'Reply',
-                    style: TextStyle(fontSize: 12, color: Colors.grey[600]),
+                    style: TextStyle(fontSize: 12, color: context.textSecondary),
                   ),
                 ],
               ),

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:ayotani/theme/app_colors.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 import '../../routes/app_routes.dart';
@@ -7,7 +8,7 @@ import '../../widgets/circle_social_button.dart';
 import '../../services/auth_service.dart';
 
 class LoginPage extends StatefulWidget {
-  const LoginPage({super.key});
+  LoginPage({super.key});
 
   @override
   State<LoginPage> createState() => _LoginPageState();
@@ -106,38 +107,38 @@ class _LoginPageState extends State<LoginPage> {
     return Scaffold(
       body: SafeArea(
         child: SingleChildScrollView(
-          padding: const EdgeInsets.fromLTRB(24, 34, 24, 26),
+          padding: EdgeInsets.fromLTRB(24, 34, 24, 26),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              const SizedBox(height: 30),
-              const Text(
+              SizedBox(height: 30),
+              Text(
                 "Login",
                 style: TextStyle(
                   fontSize: 34,
                   fontWeight: FontWeight.w800,
                   height: 1.1,
-                  color: Colors.black,
+                  color: context.textPrimary,
                 ),
               ),
-              const SizedBox(height: 10),
+              SizedBox(height: 10),
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 4),
+                padding: EdgeInsets.symmetric(horizontal: 4),
                 child: Text(
                   "Masukkan  Username/Email  dan  Kata  Sandi\nakun anda untuk masuk",
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     fontSize: 14.5,
                     height: 1.35,
-                    color: Colors.black.withOpacity(0.65),
+                    color: context.textPrimary.withOpacity(0.65),
                   ),
                 ),
               ),
-              const SizedBox(height: 22),
+              SizedBox(height: 22),
               if (_errorMessage != null)
                 Container(
                   width: double.infinity,
-                  padding: const EdgeInsets.all(12),
+                  padding: EdgeInsets.all(12),
                   decoration: BoxDecoration(
                     color: Colors.red.withOpacity(0.1),
                     border: Border.all(color: Colors.red.withOpacity(0.5)),
@@ -145,82 +146,82 @@ class _LoginPageState extends State<LoginPage> {
                   ),
                   child: Text(
                     _errorMessage!,
-                    style: const TextStyle(
+                    style: TextStyle(
                       color: Colors.red,
                       fontSize: 13,
                       fontWeight: FontWeight.w500,
                     ),
                   ),
                 ),
-              if (_errorMessage != null) const SizedBox(height: 16),
+              if (_errorMessage != null) SizedBox(height: 16),
               TextField(
                 controller: _emailC,
                 keyboardType: TextInputType.emailAddress,
                 enabled: !_isLoading,
                 decoration: InputDecoration(
                   hintText: "Email",
-                  hintStyle: TextStyle(color: Colors.black.withOpacity(0.35)),
+                  hintStyle: TextStyle(color: context.textPrimary.withOpacity(0.35)),
                   contentPadding:
-                      const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                      EdgeInsets.symmetric(horizontal: 16, vertical: 14),
                   enabledBorder: _border(),
                   focusedBorder: _border(),
-                  disabledBorder: _border(color: Colors.grey),
+                  disabledBorder: _border(color: context.bgGrey),
                 ),
               ),
-              const SizedBox(height: 16),
+              SizedBox(height: 16),
               TextField(
                 controller: _passC,
                 obscureText: _obscure,
                 enabled: !_isLoading,
                 decoration: InputDecoration(
                   hintText: "Kata sandi",
-                  hintStyle: TextStyle(color: Colors.black.withOpacity(0.35)),
+                  hintStyle: TextStyle(color: context.textPrimary.withOpacity(0.35)),
                   contentPadding:
-                      const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                      EdgeInsets.symmetric(horizontal: 16, vertical: 14),
                   enabledBorder: _border(),
                   focusedBorder: _border(),
-                  disabledBorder: _border(color: Colors.grey),
+                  disabledBorder: _border(color: context.bgGrey),
                   suffixIcon: IconButton(
                     onPressed: !_isLoading ? () => setState(() => _obscure = !_obscure) : null,
                     icon: Icon(
                       _obscure ? Icons.visibility_off : Icons.visibility,
-                      color: Colors.black.withOpacity(0.5),
+                      color: context.textPrimary.withOpacity(0.5),
                     ),
                   ),
                 ),
               ),
-              const SizedBox(height: 14),
+              SizedBox(height: 14),
               Row(
                 children: [
                   InkWell(
                     onTap: !_isLoading ? () => setState(() => _remember = !_remember) : null,
                     borderRadius: BorderRadius.circular(8),
                     child: Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 6),
+                      padding: EdgeInsets.symmetric(vertical: 6),
                       child: Row(
                         children: [
                           _SquareCheck(
                             checked: _remember,
-                            color: AppColors.green,
+                            color: context.primaryColor,
                           ),
-                          const SizedBox(width: 10),
+                          SizedBox(width: 10),
                           Text(
                             "Ingatkan saya",
                             style: TextStyle(
                               fontSize: 13.5,
-                              color: Colors.black.withOpacity(0.7),
+                              color: context.textPrimary.withOpacity(0.7),
                             ),
                           ),
                         ],
                       ),
                     ),
                   ),
-                  const Spacer(),
+                  Spacer(),
                   GestureDetector(
                     onTap: !_isLoading
                         ? () {
                             ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
+                              SnackBar(
                                 content: Text('Fitur reset password akan segera hadir'),
                                 duration: Duration(seconds: 2),
                               ),
@@ -232,67 +233,67 @@ class _LoginPageState extends State<LoginPage> {
                       style: TextStyle(
                         fontSize: 13.5,
                         fontWeight: FontWeight.w600,
-                        color: Colors.black.withOpacity(0.65),
+                        color: context.textPrimary.withOpacity(0.65),
                       ),
                     ),
                   ),
                 ],
               ),
-              const SizedBox(height: 46),
+              SizedBox(height: 46),
               Center(
                 child: SizedBox(
                   width: 190,
                   height: 46,
                   child: FilledButton(
                     style: FilledButton.styleFrom(
-                      backgroundColor: AppColors.green,
-                      shape: const StadiumBorder(),
-                      textStyle: const TextStyle(
+                      backgroundColor: context.primaryColor,
+                      shape: StadiumBorder(),
+                      textStyle: TextStyle(
                         fontSize: 15.5,
                         fontWeight: FontWeight.w700,
                       ),
-                      disabledBackgroundColor: Colors.grey,
+                      disabledBackgroundColor: context.bgGrey,
                     ),
                     onPressed: _isLoading ? null : _handleLogin,
                     child: _isLoading
-                        ? const SizedBox(
+                        ? SizedBox(
                             width: 20,
                             height: 20,
                             child: CircularProgressIndicator(
                               strokeWidth: 2,
-                              valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                              valueColor: AlwaysStoppedAnimation<Color>(context.scaffoldBg),
                             ),
                           )
-                        : const Text("Login"),
+                        : Text("Login"),
                   ),
                 ),
               ),
-              const SizedBox(height: 18),
+              SizedBox(height: 18),
               GestureDetector(
                 onTap: !_isLoading
                     ? () {
                         Navigator.pushReplacementNamed(context, AppRoutes.signup);
                       }
                     : null,
-                child: const Text(
+                child: Text(
                   "Belum punya akun?",
                   style: TextStyle(
                     fontSize: 13.8,
                     decoration: TextDecoration.underline,
                     fontWeight: FontWeight.w600,
-                    color: Colors.black,
+                    color: context.textPrimary,
                   ),
                 ),
               ),
-              const SizedBox(height: 44),
+              SizedBox(height: 44),
               Text(
                 "Atau lanjut dengan",
                 style: TextStyle(
                   fontSize: 13.5,
-                  color: Colors.black.withOpacity(0.6),
+                  color: context.textPrimary.withOpacity(0.6),
                 ),
               ),
-              const SizedBox(height: 16),
+              SizedBox(height: 16),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
@@ -304,7 +305,7 @@ class _LoginPageState extends State<LoginPage> {
                       height: 22,
                     ),
                   ),
-                  const SizedBox(width: 18),
+                  SizedBox(width: 18),
                   CircleSocialButton(
                     onTap: () {},
                     child: SvgPicture.asset(
@@ -312,7 +313,7 @@ class _LoginPageState extends State<LoginPage> {
                       width: 22,
                       height: 22,
                       colorFilter:
-                          const ColorFilter.mode(Colors.black, BlendMode.srcIn),
+                          ColorFilter.mode(Colors.black, BlendMode.srcIn),
                     ),
                   ),
                 ],

@@ -1,53 +1,54 @@
 import 'package:flutter/material.dart';
+import 'package:ayotani/theme/app_colors.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../theme/app_colors.dart';
 
 class CustomerServiceScreen extends StatelessWidget {
-  const CustomerServiceScreen({super.key});
+  CustomerServiceScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: context.scaffoldBg,
       appBar: AppBar(
-        title: Text('Layanan Pelanggan', style: GoogleFonts.inter(color: Colors.black)),
-        backgroundColor: Colors.white,
+        title: Text('Layanan Pelanggan', style: GoogleFonts.inter(color: context.textPrimary)),
+        backgroundColor: context.scaffoldBg,
         elevation: 0,
-        iconTheme: const IconThemeData(color: Colors.black),
+        iconTheme: IconThemeData(color: Colors.black),
       ),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(24.0),
+        padding: EdgeInsets.all(24.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // --- Kontak Support ---
             Container(
-              padding: const EdgeInsets.all(20),
+              padding: EdgeInsets.all(20),
               decoration: BoxDecoration(
                 // PERBAIKAN: Menggunakan withValues agar tidak deprecated
-                color: AppColors.green.withValues(alpha: 0.1),
+                color: context.primaryColor.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(16),
-                border: Border.all(color: AppColors.green.withValues(alpha: 0.3)),
+                border: Border.all(color: context.primaryColor.withValues(alpha: 0.3)),
               ),
               child: Row(
                 children: [
-                  Icon(Icons.email_outlined, color: AppColors.green, size: 30),
-                  const SizedBox(width: 16),
+                  Icon(Icons.email_outlined, color: context.primaryColor, size: 30),
+                  SizedBox(width: 16),
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
                           "Butuh bantuan mendesak?",
-                          style: GoogleFonts.inter(fontSize: 12, color: Colors.grey[700]),
+                          style: GoogleFonts.inter(fontSize: 12, color: context.textSecondary),
                         ),
-                        const SizedBox(height: 4),
+                        SizedBox(height: 4),
                         Text(
                           "support@ayotani.com",
                           style: GoogleFonts.inter(
                             fontSize: 16, 
                             fontWeight: FontWeight.bold,
-                            color: Colors.black87
+                            color: context.textPrimary
                           ),
                         ),
                       ],
@@ -57,14 +58,14 @@ class CustomerServiceScreen extends StatelessWidget {
               ),
             ),
             
-            const SizedBox(height: 30),
+            SizedBox(height: 30),
             
             // --- FAQ Section ---
             Text(
               "FAQ (Tanya Jawab)",
               style: GoogleFonts.inter(fontSize: 18, fontWeight: FontWeight.bold),
             ),
-            const SizedBox(height: 16),
+            SizedBox(height: 16),
 
             // PERBAIKAN: Menambahkan parameter context
             _buildFAQItem(
@@ -97,10 +98,10 @@ class CustomerServiceScreen extends StatelessWidget {
   Widget _buildFAQItem(BuildContext context, String question, String answer) {
     return Card(
       elevation: 0,
-      margin: const EdgeInsets.only(bottom: 12),
+      margin: EdgeInsets.only(bottom: 12),
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(12),
-        side: BorderSide(color: Colors.grey[200]!),
+        side: BorderSide(color: context.dividerColor),
       ),
       // PERBAIKAN UTAMA: Menggunakan Theme.of(context) menggantikan Theme.of(null!)
       child: Theme(
@@ -108,14 +109,14 @@ class CustomerServiceScreen extends StatelessWidget {
         child: ExpansionTile(
           title: Text(
             question,
-            style: GoogleFonts.inter(fontSize: 14, fontWeight: FontWeight.w600, color: Colors.black87),
+            style: GoogleFonts.inter(fontSize: 14, fontWeight: FontWeight.w600, color: context.textPrimary),
           ),
           children: [
             Padding(
-              padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+              padding: EdgeInsets.fromLTRB(16, 0, 16, 16),
               child: Text(
                 answer,
-                style: GoogleFonts.inter(fontSize: 13, color: Colors.grey[600], height: 1.5),
+                style: GoogleFonts.inter(fontSize: 13, color: context.textSecondary, height: 1.5),
               ),
             ),
           ],

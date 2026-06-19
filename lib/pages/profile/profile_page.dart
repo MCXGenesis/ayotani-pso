@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:ayotani/theme/app_colors.dart';
 import 'package:provider/provider.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -7,7 +8,7 @@ import '../../providers/theme_provider.dart';
 import '../../routes/app_routes.dart';
 
 class ProfilePage extends StatelessWidget {
-  const ProfilePage({super.key});
+  ProfilePage({super.key});
 
   Future<void> _handleLogout(BuildContext context) async {
     try {
@@ -41,26 +42,26 @@ class ProfilePage extends StatelessWidget {
         backgroundColor: theme.scaffoldBackgroundColor,
         body: SafeArea(
           child: SingleChildScrollView(
-            padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 20.0),
+            padding: EdgeInsets.symmetric(horizontal: 24.0, vertical: 20.0),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const SizedBox(height: 10),
+                SizedBox(height: 10),
                 
                 // --- HEADER: Avatar & Nama ---
                 Row(
                   children: [
                     CircleAvatar(
                       radius: 35,
-                      backgroundColor: theme.brightness == Brightness.dark ? Colors.grey[800] : Colors.grey[200],
+                      backgroundColor: theme.brightness == Brightness.dark ? context.textPrimary : context.dividerColor,
                       backgroundImage: (avatarUrl != null && avatarUrl.isNotEmpty)
                           ? NetworkImage(avatarUrl)
                           : null,
                       child: (avatarUrl == null || avatarUrl.isEmpty)
-                          ? Icon(Icons.person, size: 35, color: Colors.grey[400])
+                          ? Icon(Icons.person, size: 35, color: context.textMuted)
                           : null,
                     ),
-                    const SizedBox(width: 16),
+                    SizedBox(width: 16),
                     Expanded(
                       child: Text(
                         name,
@@ -75,7 +76,7 @@ class ProfilePage extends StatelessWidget {
                   ],
                 ),
 
-                const SizedBox(height: 40),
+                SizedBox(height: 40),
 
                 // --- SECTION: Settings ---
                 Text(
@@ -87,47 +88,47 @@ class ProfilePage extends StatelessWidget {
                   ),
                 ),
                 
-                const SizedBox(height: 20),
+                SizedBox(height: 20),
 
                 // --- MENU LIST (Fungsional) ---
                 _buildMenuItem(
                   context,
                   title: 'Profil Saya',
                   icon: Icons.person,
-                  iconColor: const Color(0xFF4CAF50), // Hijau
-                  bgColor: const Color(0xFFE8F5E9),   // Hijau muda
+                  iconColor: Color(0xFF4CAF50), // Hijau
+                  bgColor: Color(0xFFE8F5E9),   // Hijau muda
                   onTap: () => Navigator.pushNamed(context, AppRoutes.editProfile),
                 ),
                 _buildMenuItem(
                   context,
                   title: 'Ganti Password',
                   icon: Icons.lock_outline,
-                  iconColor: const Color(0xFF4CAF50),
-                  bgColor: const Color(0xFFE8F5E9),
+                  iconColor: Color(0xFF4CAF50),
+                  bgColor: Color(0xFFE8F5E9),
                   onTap: () => Navigator.pushNamed(context, AppRoutes.changePassword),
                 ),
                 _buildMenuItem(
                   context,
                   title: 'Notifikasi',
                   icon: Icons.notifications_none,
-                  iconColor: const Color(0xFF4CAF50),
-                  bgColor: const Color(0xFFE8F5E9),
+                  iconColor: Color(0xFF4CAF50),
+                  bgColor: Color(0xFFE8F5E9),
                   onTap: () => Navigator.pushNamed(context, AppRoutes.notifications),
                 ),
                 _buildMenuItem(
                   context,
                   title: 'Syarat & Ketentuan',
                   icon: Icons.security,
-                  iconColor: const Color(0xFF4CAF50),
-                  bgColor: const Color(0xFFE8F5E9),
+                  iconColor: Color(0xFF4CAF50),
+                  bgColor: Color(0xFFE8F5E9),
                   onTap: () => Navigator.pushNamed(context, AppRoutes.terms),
                 ),
                 _buildMenuItem(
                   context,
                   title: 'Layanan Pelanggan',
                   icon: Icons.chat_bubble_outline,
-                  iconColor: const Color(0xFF4CAF50),
-                  bgColor: const Color(0xFFE8F5E9),
+                  iconColor: Color(0xFF4CAF50),
+                  bgColor: Color(0xFFE8F5E9),
                   onTap: () {
                      Navigator.pushNamed(context, AppRoutes.customerService);
                   },
@@ -136,8 +137,8 @@ class ProfilePage extends StatelessWidget {
                   context,
                   title: 'Mode Gelap',
                   icon: themeProvider.isDarkMode ? Icons.dark_mode : Icons.light_mode,
-                  iconColor: const Color(0xFF4CAF50),
-                  bgColor: const Color(0xFFE8F5E9),
+                  iconColor: Color(0xFF4CAF50),
+                  bgColor: Color(0xFFE8F5E9),
                   onTap: () {
                     themeProvider.toggleTheme(!themeProvider.isDarkMode);
                   },
@@ -149,26 +150,26 @@ class ProfilePage extends StatelessWidget {
                   ),
                 ),
 
-                const SizedBox(height: 30),
+                SizedBox(height: 30),
 
                 // --- LOG OUT BUTTON ---
                 InkWell(
                   onTap: () => _handleLogout(context),
                   borderRadius: BorderRadius.circular(12),
                   child: Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 12),
+                    padding: EdgeInsets.symmetric(vertical: 12),
                     child: Row(
                       children: [
                         Container(
                           width: 44,
                           height: 44,
                           decoration: BoxDecoration(
-                            color: const Color(0xFFFFEBEE), // Merah muda
+                            color: Color(0xFFFFEBEE), // Merah muda
                             borderRadius: BorderRadius.circular(12),
                           ),
-                          child: const Icon(Icons.logout, color: Colors.red, size: 24),
+                          child: Icon(Icons.logout, color: Colors.red, size: 24),
                         ),
-                        const SizedBox(width: 16),
+                        SizedBox(width: 16),
                         Text(
                           'Log Out',
                           style: GoogleFonts.inter(
@@ -181,7 +182,7 @@ class ProfilePage extends StatelessWidget {
                     ),
                   ),
                 ),
-                const SizedBox(height: 20),
+                SizedBox(height: 20),
               ],
             ),
           ),
@@ -201,7 +202,7 @@ class ProfilePage extends StatelessWidget {
   }) {
     final theme = Theme.of(context);
     return Padding(
-      padding: const EdgeInsets.only(bottom: 16),
+      padding: EdgeInsets.only(bottom: 16),
       child: InkWell(
         onTap: onTap,
         borderRadius: BorderRadius.circular(12),
@@ -211,12 +212,12 @@ class ProfilePage extends StatelessWidget {
               width: 44,
               height: 44,
               decoration: BoxDecoration(
-                color: theme.brightness == Brightness.dark ? const Color(0xFF1B2C21) : bgColor,
+                color: theme.brightness == Brightness.dark ? Color(0xFF1B2C21) : bgColor,
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Icon(icon, color: iconColor, size: 24),
             ),
-            const SizedBox(width: 16),
+            SizedBox(width: 16),
             Expanded(
               child: Text(
                 title,
@@ -231,10 +232,10 @@ class ProfilePage extends StatelessWidget {
               width: 32,
               height: 32,
               decoration: BoxDecoration(
-                color: theme.brightness == Brightness.dark ? Colors.grey[850] : Colors.grey[100],
+                color: theme.brightness == Brightness.dark ? context.textPrimary : context.dividerColor,
                 shape: BoxShape.circle,
               ),
-              child: Icon(Icons.chevron_right, color: Colors.grey[600], size: 20),
+              child: Icon(Icons.chevron_right, color: context.textSecondary, size: 20),
             ),
           ],
         ),

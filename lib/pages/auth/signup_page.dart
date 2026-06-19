@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:ayotani/theme/app_colors.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 import '../../routes/app_routes.dart';
@@ -10,7 +11,7 @@ import '../../services/auth_service.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class SignupPage extends StatefulWidget {
-  const SignupPage({super.key});
+  SignupPage({super.key});
 
   @override
   State<SignupPage> createState() => _SignupPageState();
@@ -115,7 +116,7 @@ class _SignupPageState extends State<SignupPage> {
         } else if (user != null) {
           // User signed up, but needs to confirm email
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
+            SnackBar(
               content: Text('Registrasi berhasil! Silakan cek email untuk verifikasi.'),
               duration: Duration(seconds: 3),
             ),
@@ -146,36 +147,36 @@ class _SignupPageState extends State<SignupPage> {
     return Scaffold(
       body: SafeArea(
         child: SingleChildScrollView(
-          padding: const EdgeInsets.fromLTRB(24, 30, 24, 26),
+          padding: EdgeInsets.fromLTRB(24, 30, 24, 26),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const SizedBox(height: 12),
-              const Text(
+              SizedBox(height: 12),
+              Text(
                 "Daftar dulu gasih?",
                 style: TextStyle(
                   fontSize: 34,
                   fontWeight: FontWeight.w800,
                   height: 1.1,
-                  color: Colors.black,
+                  color: context.textPrimary,
                 ),
               ),
-              const SizedBox(height: 10),
+              SizedBox(height: 10),
               Text(
                 "Masukkan Email dan Kata Sandi untuk membuat\nakun baru",
                 style: TextStyle(
                   fontSize: 14.5,
                   height: 1.35,
-                  color: Colors.black.withOpacity(0.65),
+                  color: context.textPrimary.withOpacity(0.65),
                 ),
               ),
-              const SizedBox(height: 22),
+              SizedBox(height: 22),
 
               // Error message display
               if (_errorMessage != null)
                 Container(
                   width: double.infinity,
-                  padding: const EdgeInsets.all(12),
+                  padding: EdgeInsets.all(12),
                   decoration: BoxDecoration(
                     color: Colors.red.withOpacity(0.1),
                     border: Border.all(color: Colors.red.withOpacity(0.5)),
@@ -183,14 +184,14 @@ class _SignupPageState extends State<SignupPage> {
                   ),
                   child: Text(
                     _errorMessage!,
-                    style: const TextStyle(
+                    style: TextStyle(
                       color: Colors.red,
                       fontSize: 13,
                       fontWeight: FontWeight.w500,
                     ),
                   ),
                 ),
-              if (_errorMessage != null) const SizedBox(height: 16),
+              if (_errorMessage != null) SizedBox(height: 16),
 
               // Username
               TextField(
@@ -198,14 +199,14 @@ class _SignupPageState extends State<SignupPage> {
                 enabled: !_isLoading,
                 decoration: InputDecoration(
                   hintText: "Username",
-                  hintStyle: TextStyle(color: Colors.black.withOpacity(0.35)),
-                  contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                  hintStyle: TextStyle(color: context.textPrimary.withOpacity(0.35)),
+                  contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 14),
                   enabledBorder: _border(),
                   focusedBorder: _border(),
-                  disabledBorder: _border(color: Colors.grey),
+                  disabledBorder: _border(color: context.bgGrey),
                 ),
               ),
-              const SizedBox(height: 16),
+              SizedBox(height: 16),
 
               // Email
               TextField(
@@ -214,14 +215,14 @@ class _SignupPageState extends State<SignupPage> {
                 enabled: !_isLoading,
                 decoration: InputDecoration(
                   hintText: "Email",
-                  hintStyle: TextStyle(color: Colors.black.withOpacity(0.35)),
-                  contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                  hintStyle: TextStyle(color: context.textPrimary.withOpacity(0.35)),
+                  contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 14),
                   enabledBorder: _border(),
                   focusedBorder: _border(),
-                  disabledBorder: _border(color: Colors.grey),
+                  disabledBorder: _border(color: context.bgGrey),
                 ),
               ),
-              const SizedBox(height: 16),
+              SizedBox(height: 16),
 
               // Password
               TextField(
@@ -230,21 +231,21 @@ class _SignupPageState extends State<SignupPage> {
                 enabled: !_isLoading,
                 decoration: InputDecoration(
                   hintText: "Kata sandi",
-                  hintStyle: TextStyle(color: Colors.black.withOpacity(0.35)),
-                  contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                  hintStyle: TextStyle(color: context.textPrimary.withOpacity(0.35)),
+                  contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 14),
                   enabledBorder: _border(),
                   focusedBorder: _border(),
-                  disabledBorder: _border(color: Colors.grey),
+                  disabledBorder: _border(color: context.bgGrey),
                   suffixIcon: IconButton(
                     onPressed: !_isLoading ? () => setState(() => _obscure1 = !_obscure1) : null,
                     icon: Icon(
                       _obscure1 ? Icons.visibility_off : Icons.visibility,
-                      color: Colors.black.withOpacity(0.5),
+                      color: context.textPrimary.withOpacity(0.5),
                     ),
                   ),
                 ),
               ),
-              const SizedBox(height: 16),
+              SizedBox(height: 16),
 
               // Confirm Password
               TextField(
@@ -253,38 +254,38 @@ class _SignupPageState extends State<SignupPage> {
                 enabled: !_isLoading,
                 decoration: InputDecoration(
                   hintText: "Verifikasi kata sandi",
-                  hintStyle: TextStyle(color: Colors.black.withOpacity(0.35)),
-                  contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                  hintStyle: TextStyle(color: context.textPrimary.withOpacity(0.35)),
+                  contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 14),
                   enabledBorder: _border(),
                   focusedBorder: _border(),
-                  disabledBorder: _border(color: Colors.grey),
+                  disabledBorder: _border(color: context.bgGrey),
                   suffixIcon: IconButton(
                     onPressed: !_isLoading ? () => setState(() => _obscure2 = !_obscure2) : null,
                     icon: Icon(
                       _obscure2 ? Icons.visibility_off : Icons.visibility,
-                      color: Colors.black.withOpacity(0.5),
+                      color: context.textPrimary.withOpacity(0.5),
                     ),
                   ),
                 ),
               ),
 
-              const SizedBox(height: 16),
+              SizedBox(height: 16),
 
               InkWell(
                 onTap: !_isLoading ? () => setState(() => _agree = !_agree) : null,
                 borderRadius: BorderRadius.circular(12),
                 child: Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 6),
+                  padding: EdgeInsets.symmetric(vertical: 6),
                   child: Row(
                     children: [
-                      RoundCheck(checked: _agree, color: AppColors.green),
-                      const SizedBox(width: 10),
+                      RoundCheck(checked: _agree, color: context.primaryColor),
+                      SizedBox(width: 10),
                       Expanded(
                         child: Text(
                           "Setuju dengan Syarat dan Ketentuan",
                           style: TextStyle(
                             fontSize: 13.5,
-                            color: Colors.black.withOpacity(0.7),
+                            color: context.textPrimary.withOpacity(0.7),
                           ),
                         ),
                       ),
@@ -293,7 +294,7 @@ class _SignupPageState extends State<SignupPage> {
                 ),
               ),
 
-              const SizedBox(height: 36),
+              SizedBox(height: 36),
 
               Center(
                 child: SizedBox(
@@ -301,27 +302,27 @@ class _SignupPageState extends State<SignupPage> {
                   height: 46,
                   child: FilledButton(
                     style: FilledButton.styleFrom(
-                      backgroundColor: AppColors.green,
-                      shape: const StadiumBorder(),
-                      textStyle: const TextStyle(fontSize: 15.5, fontWeight: FontWeight.w700),
-                      disabledBackgroundColor: Colors.grey,
+                      backgroundColor: context.primaryColor,
+                      shape: StadiumBorder(),
+                      textStyle: TextStyle(fontSize: 15.5, fontWeight: FontWeight.w700),
+                      disabledBackgroundColor: context.bgGrey,
                     ),
                     onPressed: _isLoading ? null : _handleSignUp,
                     child: _isLoading
-                        ? const SizedBox(
+                        ? SizedBox(
                             width: 20,
                             height: 20,
                             child: CircularProgressIndicator(
                               strokeWidth: 2,
-                              valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                              valueColor: AlwaysStoppedAnimation<Color>(context.scaffoldBg),
                             ),
                           )
-                        : const Text("Daftar"),
+                        : Text("Daftar"),
                   ),
                 ),
               ),
 
-              const SizedBox(height: 16),
+              SizedBox(height: 16),
 
               Center(
                 child: GestureDetector(
@@ -330,28 +331,28 @@ class _SignupPageState extends State<SignupPage> {
                           Navigator.pushReplacementNamed(context, AppRoutes.login);
                         }
                       : null,
-                  child: const Text(
+                  child: Text(
                     "Sudah punya akun?",
                     style: TextStyle(
                       fontSize: 13.8,
                       decoration: TextDecoration.underline,
                       fontWeight: FontWeight.w600,
-                      color: Colors.black,
+                      color: context.textPrimary,
                     ),
                   ),
                 ),
               ),
 
-              const SizedBox(height: 44),
+              SizedBox(height: 44),
 
               Center(
                 child: Text(
                   "Atau lanjut dengan",
-                  style: TextStyle(fontSize: 13.5, color: Colors.black.withOpacity(0.6)),
+                  style: TextStyle(fontSize: 13.5, color: context.textPrimary.withOpacity(0.6)),
                 ),
               ),
 
-              const SizedBox(height: 16),
+              SizedBox(height: 16),
 
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -360,7 +361,7 @@ class _SignupPageState extends State<SignupPage> {
                     onTap: !_isLoading
                         ? () {
                             ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
+                              SnackBar(
                                 content: Text('Google Sign-In akan segera tersedia'),
                                 duration: Duration(seconds: 2),
                               ),
@@ -369,12 +370,12 @@ class _SignupPageState extends State<SignupPage> {
                         : () {},
                     child: SvgPicture.asset("assets/icons/google.svg", width: 22, height: 22),
                   ),
-                  const SizedBox(width: 18),
+                  SizedBox(width: 18),
                   CircleSocialButton(
                     onTap: !_isLoading
                         ? () {
                             ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
+                              SnackBar(
                                 content: Text('Apple Sign-In akan segera tersedia'),
                                 duration: Duration(seconds: 2),
                               ),
@@ -385,7 +386,7 @@ class _SignupPageState extends State<SignupPage> {
                       "assets/icons/apple.svg",
                       width: 22,
                       height: 22,
-                      colorFilter: const ColorFilter.mode(Colors.black, BlendMode.srcIn),
+                      colorFilter: ColorFilter.mode(Colors.black, BlendMode.srcIn),
                     ),
                   ),
                 ],

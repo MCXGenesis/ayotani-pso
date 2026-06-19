@@ -5,7 +5,7 @@ import '../services/supabase_service.dart';
 import '../theme/app_colors.dart';
 
 class WeatherWidget extends StatefulWidget {
-  const WeatherWidget({super.key});
+  WeatherWidget({super.key});
 
   @override
   State<WeatherWidget> createState() => _WeatherWidgetState();
@@ -50,7 +50,7 @@ class _WeatherWidgetState extends State<WeatherWidget> {
     final weatherText = _getWeatherText(weatherCondition);
 
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: EdgeInsets.all(16),
       decoration: BoxDecoration(
         gradient: LinearGradient(
           colors: [_getGradientColor1(temp), _getGradientColor2(temp)],
@@ -70,16 +70,16 @@ class _WeatherWidgetState extends State<WeatherWidget> {
                 children: [
                   Text(
                     weatherText,
-                    style: const TextStyle(
+                    style: TextStyle(
                       color: Colors.white70,
                       fontSize: 12,
                     ),
                   ),
-                  const SizedBox(height: 4),
+                  SizedBox(height: 4),
                   Text(
                     '${temp.toStringAsFixed(1)}°C',
-                    style: const TextStyle(
-                      color: Colors.white,
+                    style: TextStyle(
+                      color: context.cardBg,
                       fontSize: 32,
                       fontWeight: FontWeight.w800,
                     ),
@@ -88,27 +88,27 @@ class _WeatherWidgetState extends State<WeatherWidget> {
               ),
               Icon(
                 weatherIcon,
-                color: Colors.white,
+                color: context.cardBg,
                 size: 56,
               ),
             ],
           ),
-          const SizedBox(height: 16),
+          SizedBox(height: 16),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text(
+                  Text(
                     'Kelembapan',
                     style: TextStyle(color: Colors.white70, fontSize: 11),
                   ),
-                  const SizedBox(height: 4),
+                  SizedBox(height: 4),
                   Text(
                     '${humidity.toStringAsFixed(1)}%',
-                    style: const TextStyle(
-                      color: Colors.white,
+                    style: TextStyle(
+                      color: context.cardBg,
                       fontSize: 14,
                       fontWeight: FontWeight.w600,
                     ),
@@ -118,15 +118,15 @@ class _WeatherWidgetState extends State<WeatherWidget> {
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text(
+                  Text(
                     'Kelembapan Tanah',
                     style: TextStyle(color: Colors.white70, fontSize: 11),
                   ),
-                  const SizedBox(height: 4),
+                  SizedBox(height: 4),
                   Text(
                     '${(reading.soilMoisture ?? 0).toStringAsFixed(1)}%',
-                    style: const TextStyle(
-                      color: Colors.white,
+                    style: TextStyle(
+                      color: context.cardBg,
                       fontSize: 14,
                       fontWeight: FontWeight.w600,
                     ),
@@ -136,15 +136,15 @@ class _WeatherWidgetState extends State<WeatherWidget> {
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text(
+                  Text(
                     'Status Air',
                     style: TextStyle(color: Colors.white70, fontSize: 11),
                   ),
-                  const SizedBox(height: 4),
+                  SizedBox(height: 4),
                   Text(
                     '${(reading.waterLevel ?? 0).toStringAsFixed(1)}L',
-                    style: const TextStyle(
-                      color: Colors.white,
+                    style: TextStyle(
+                      color: context.cardBg,
                       fontSize: 14,
                       fontWeight: FontWeight.w600,
                     ),
@@ -205,33 +205,33 @@ class _WeatherWidgetState extends State<WeatherWidget> {
 
   /// Get gradient color 1 based on temperature
   Color _getGradientColor1(double temp) {
-    if (temp > 30) return const Color(0xFFFF6B6B);
-    if (temp > 25) return const Color(0xFFFFD93D);
-    if (temp > 15) return const Color(0xFF6BCB77);
-    return const Color(0xFF4D96FF);
+    if (temp > 30) return Color(0xFFFF6B6B);
+    if (temp > 25) return Color(0xFFFFD93D);
+    if (temp > 15) return Color(0xFF6BCB77);
+    return Color(0xFF4D96FF);
   }
 
   /// Get gradient color 2 based on temperature
   Color _getGradientColor2(double temp) {
-    if (temp > 30) return const Color(0xFFFF8E53);
-    if (temp > 25) return const Color(0xFFFFA502);
+    if (temp > 30) return Color(0xFFFF8E53);
+    if (temp > 25) return Color(0xFFFFA502);
     if (temp > 15) return AppColors.green;
-    return const Color(0xFF2E7FBF);
+    return Color(0xFF2E7FBF);
   }
 
   /// Build loading card
   Widget _buildLoadingCard() {
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: EdgeInsets.all(16),
       decoration: BoxDecoration(
         gradient: LinearGradient(
-          colors: [AppColors.green.withOpacity(0.3), AppColors.green.withOpacity(0.1)],
+          colors: [context.primaryColor.withOpacity(0.3), context.primaryColor.withOpacity(0.1)],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
         borderRadius: BorderRadius.circular(12),
       ),
-      child: const SizedBox(
+      child: SizedBox(
         height: 120,
         child: Center(
           child: CircularProgressIndicator(),
@@ -243,7 +243,7 @@ class _WeatherWidgetState extends State<WeatherWidget> {
   /// Build error card
   Widget _buildErrorCard() {
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: Colors.red[50],
         border: Border.all(color: Colors.red[200]!),
@@ -259,14 +259,14 @@ class _WeatherWidgetState extends State<WeatherWidget> {
   /// Build no data card
   Widget _buildNoDataCard() {
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.grey[100],
+        color: context.dividerColor,
         borderRadius: BorderRadius.circular(12),
       ),
-      child: const Text(
+      child: Text(
         'Data sensor belum tersedia',
-        style: TextStyle(color: Colors.grey),
+        style: TextStyle(color: context.bgGrey),
       ),
     );
   }

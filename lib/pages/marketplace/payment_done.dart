@@ -1,32 +1,33 @@
 import 'package:flutter/material.dart';
+import 'package:ayotani/theme/app_colors.dart';
 import '../../theme/app_colors.dart';
 
 class PaymentDoneScreen extends StatelessWidget {
-  const PaymentDoneScreen({Key? key}) : super(key: key);
+  PaymentDoneScreen({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF9F9F9),
+      backgroundColor: Color(0xFFF9F9F9),
       appBar: AppBar(
-        backgroundColor: const Color(0xFFF9F9F9),
+        backgroundColor: Color(0xFFF9F9F9),
         elevation: 0,
-        leading: const SizedBox(), // Hide back button
-        title: const Text('Checkout', style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold)),
+        leading: SizedBox(), // Hide back button
+        title: Text('Checkout', style: TextStyle(color: context.textPrimary, fontWeight: FontWeight.bold)),
         centerTitle: true,
          actions: [
-          IconButton(icon: const Icon(Icons.headset_mic_outlined, color: AppColors.green), onPressed: () {}),
+          IconButton(icon: Icon(Icons.headset_mic_outlined, color: context.primaryColor), onPressed: () {}),
         ],
       ),
       body: Column(
         children: [
           // Stepper
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 20),
+            padding: EdgeInsets.symmetric(horizontal: 40, vertical: 20),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                _stepIcon(true), _stepLine(true), _stepIcon(true), _stepLine(true), _stepIcon(true)
+                _stepIcon(context, true), _stepLine(context, true), _stepIcon(context, true), _stepLine(context, true), _stepIcon(context, true)
               ],
             ),
           ),
@@ -38,23 +39,23 @@ class PaymentDoneScreen extends StatelessWidget {
                 Container(
                   width: 100,
                   height: 100,
-                  decoration: const BoxDecoration(color: Color(0xFF0A3D2F), shape: BoxShape.circle),
-                  child: const Icon(Icons.check, size: 60, color: Colors.white),
+                  decoration: BoxDecoration(color: Color(0xFF0A3D2F), shape: BoxShape.circle),
+                  child: Icon(Icons.check, size: 60, color: context.scaffoldBg),
                 ),
-                const SizedBox(height: 24),
-                const Text('Pembayaran Berhasil!', style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: Colors.black)),
-                const SizedBox(height: 12),
-                const Text(
+                SizedBox(height: 24),
+                Text('Pembayaran Berhasil!', style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: context.textPrimary)),
+                SizedBox(height: 12),
+                Text(
                   'Pesanan Anda telah berhasil dibuat!\nUntuk keterangan lebih lanjut, kunjungi\nkeranjang.',
                   textAlign: TextAlign.center,
-                  style: TextStyle(color: Colors.grey, height: 1.5),
+                  style: TextStyle(color: context.bgGrey, height: 1.5),
                 ),
               ],
             ),
           ),
           
           Padding(
-            padding: const EdgeInsets.all(24.0),
+            padding: EdgeInsets.all(24.0),
             child: Column(
               children: [
                 SizedBox(
@@ -63,23 +64,23 @@ class PaymentDoneScreen extends StatelessWidget {
                   child: ElevatedButton(
                     onPressed: () => Navigator.pushNamedAndRemoveUntil(context, '/home', (route) => false),
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFF0A3D2F),
+                      backgroundColor: Color(0xFF0A3D2F),
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
                     ),
-                    child: const Text('Lanjut Belanja', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+                    child: Text('Lanjut Belanja', style: TextStyle(color: context.scaffoldBg, fontWeight: FontWeight.bold)),
                   ),
                 ),
-                const SizedBox(height: 12),
+                SizedBox(height: 12),
                 SizedBox(
                   width: double.infinity,
                   height: 48,
                   child: OutlinedButton(
                     onPressed: () => Navigator.pushNamedAndRemoveUntil(context, '/cart', (route) => false),
                     style: OutlinedButton.styleFrom(
-                      side: const BorderSide(color: AppColors.green),
+                      side: BorderSide(color: context.primaryColor),
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
                     ),
-                    child: const Text('Keranjang Saya', style: TextStyle(color: AppColors.green, fontWeight: FontWeight.bold)),
+                    child: Text('Keranjang Saya', style: TextStyle(color: context.primaryColor, fontWeight: FontWeight.bold)),
                   ),
                 ),
               ],
@@ -90,19 +91,19 @@ class PaymentDoneScreen extends StatelessWidget {
     );
   }
 
-  Widget _stepIcon(bool active) {
+  Widget _stepIcon(BuildContext context, bool active) {
     return Container(
       width: 20, height: 20,
       decoration: BoxDecoration(
-        color: active ? AppColors.green : Colors.grey[300],
+        color: active ? context.primaryColor : context.dividerColor,
         shape: BoxShape.circle,
-        border: active ? Border.all(color: Colors.white, width: 2) : null,
+        border: active ? Border.all(color: context.cardBg, width: 2) : null,
       ),
-      child: active ? const Icon(Icons.check, size: 12, color: Colors.white) : null,
+      child: active ? Icon(Icons.check, size: 12, color: context.cardBg) : null,
     );
   }
 
-  Widget _stepLine(bool active) {
-    return Expanded(child: Container(height: 3, color: active ? AppColors.green : Colors.grey[300]));
+  Widget _stepLine(BuildContext context, bool active) {
+    return Expanded(child: Container(height: 3, color: active ? context.primaryColor : context.dividerColor));
   }
 }

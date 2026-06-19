@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:ayotani/theme/app_colors.dart';
 import 'package:youtube_player_flutter/youtube_player_flutter.dart';
 import '../../models/educational_content_model.dart';
 import '../../services/educational_service.dart';
@@ -7,7 +8,7 @@ import '../../theme/app_colors.dart';
 class EducationalDetailScreen extends StatefulWidget {
   final int contentId;
 
-  const EducationalDetailScreen({super.key, required this.contentId});
+  EducationalDetailScreen({super.key, required this.contentId});
 
   @override
   State<EducationalDetailScreen> createState() => _EducationalDetailScreenState();
@@ -39,7 +40,7 @@ class _EducationalDetailScreenState extends State<EducationalDetailScreen> {
     if (videoId != null) {
       _yt = YoutubePlayerController(
         initialVideoId: videoId,
-        flags: const YoutubePlayerFlags(
+        flags: YoutubePlayerFlags(
           autoPlay: false,
           mute: false,
         ),
@@ -58,27 +59,27 @@ class _EducationalDetailScreenState extends State<EducationalDetailScreen> {
   @override
   Widget build(BuildContext context) {
     if (_loading) {
-      return const Scaffold(
-        body: Center(child: CircularProgressIndicator(color: AppColors.green)),
+      return Scaffold(
+        body: Center(child: CircularProgressIndicator(color: context.primaryColor)),
       );
     }
 
     if (_content == null) {
-      return const Scaffold(
+      return Scaffold(
         body: Center(child: Text('Konten tidak ditemukan')),
       );
     }
 
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: context.scaffoldBg,
       appBar: AppBar(
-        title: const Text('Video Belajar', style: TextStyle(fontWeight: FontWeight.w700)),
-        backgroundColor: Colors.white,
+        title: Text('Video Belajar', style: TextStyle(fontWeight: FontWeight.w700)),
+        backgroundColor: context.scaffoldBg,
         elevation: 0,
         foregroundColor: Colors.black,
       ),
       body: ListView(
-        padding: const EdgeInsets.all(16),
+        padding: EdgeInsets.all(16),
         children: [
           // Player / Fallback
           if (_yt != null)
@@ -90,24 +91,24 @@ class _EducationalDetailScreenState extends State<EducationalDetailScreen> {
             Container(
               height: 210,
               decoration: BoxDecoration(
-                color: Colors.grey[200],
+                color: context.dividerColor,
                 borderRadius: BorderRadius.circular(14),
               ),
-              child: const Center(
+              child: Center(
                 child: Text('Video URL bukan YouTube / invalid'),
               ),
             ),
 
-          const SizedBox(height: 16),
+          SizedBox(height: 16),
 
           Text(
             _content!.title,
-            style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w800),
+            style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800),
           ),
-          const SizedBox(height: 8),
+          SizedBox(height: 8),
           Text(
             _content!.description,
-            style: TextStyle(color: Colors.grey[800], height: 1.5),
+            style: TextStyle(color: context.textPrimary, height: 1.5),
           ),
         ],
       ),

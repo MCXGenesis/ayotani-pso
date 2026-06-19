@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:ayotani/theme/app_colors.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -6,7 +7,7 @@ import '../../providers/auth_provider.dart';
 import '../../theme/app_colors.dart';
 
 class EditProfileScreen extends StatefulWidget {
-  const EditProfileScreen({super.key});
+  EditProfileScreen({super.key});
 
   @override
   State<EditProfileScreen> createState() => _EditProfileScreenState();
@@ -39,14 +40,14 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         await supabase.auth.updateUser(UserAttributes(email: newEmail));
         if (mounted) {
            ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Email diperbarui! Cek inbox email baru Anda untuk konfirmasi.')),
+            SnackBar(content: Text('Email diperbarui! Cek inbox email baru Anda untuk konfirmasi.')),
           );
            Navigator.pop(context);
         }
       } else {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Tidak ada perubahan yang disimpan.')),
+            SnackBar(content: Text('Tidak ada perubahan yang disimpan.')),
           );
         }
       }
@@ -66,31 +67,31 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     final avatarUrl = userProfile?.avatarUrl;
 
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: context.scaffoldBg,
       appBar: AppBar(
-        title: Text('Profil Saya', style: GoogleFonts.inter(color: Colors.black)),
-        backgroundColor: Colors.white,
+        title: Text('Profil Saya', style: GoogleFonts.inter(color: context.textPrimary)),
+        backgroundColor: context.scaffoldBg,
         elevation: 0,
-        iconTheme: const IconThemeData(color: Colors.black),
+        iconTheme: IconThemeData(color: Colors.black),
       ),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(24.0),
+        padding: EdgeInsets.all(24.0),
         child: Column(
           children: [
             // --- 1. Tampilan Gambar (Read Only) ---
             Center(
               child: CircleAvatar(
                 radius: 50,
-                backgroundColor: Colors.grey[200],
+                backgroundColor: context.dividerColor,
                 backgroundImage: (avatarUrl != null && avatarUrl.isNotEmpty)
                     ? NetworkImage(avatarUrl)
                     : null,
                 child: (avatarUrl == null || avatarUrl.isEmpty)
-                    ? Icon(Icons.person, size: 50, color: Colors.grey[400])
+                    ? Icon(Icons.person, size: 50, color: context.textMuted)
                     : null,
               ),
             ),
-            const SizedBox(height: 30),
+            SizedBox(height: 30),
 
             // --- 2. Nama (Read Only / Locked) ---
             _buildTextField(
@@ -99,7 +100,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
               Icons.person, 
               isReadOnly: true // Dikunci
             ),
-            const SizedBox(height: 20),
+            SizedBox(height: 20),
 
             // --- 3. Email (Bisa Diedit) ---
             _buildTextField(
@@ -109,7 +110,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
               isReadOnly: false // Bisa diubah
             ),
             
-            const SizedBox(height: 40),
+            SizedBox(height: 40),
 
             // --- 4. Tombol Simpan ---
             SizedBox(
@@ -118,12 +119,12 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
               child: ElevatedButton(
                 onPressed: _isLoading ? null : _updateProfile,
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.green,
+                  backgroundColor: context.primaryColor,
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                 ),
                 child: _isLoading
-                    ? const CircularProgressIndicator(color: Colors.white)
-                    : Text("Simpan Perubahan Email", style: GoogleFonts.inter(color: Colors.white, fontWeight: FontWeight.bold)),
+                    ? CircularProgressIndicator(color: context.scaffoldBg)
+                    : Text("Simpan Perubahan Email", style: GoogleFonts.inter(color: context.scaffoldBg, fontWeight: FontWeight.bold)),
               ),
             ),
           ],
@@ -137,32 +138,32 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(label, style: GoogleFonts.inter(fontWeight: FontWeight.bold, fontSize: 14)),
-        const SizedBox(height: 8),
+        SizedBox(height: 8),
         TextField(
           controller: controller,
           readOnly: isReadOnly, // Kunci field jika readOnly true
-          style: TextStyle(color: isReadOnly ? Colors.grey[600] : Colors.black),
+          style: TextStyle(color: isReadOnly ? context.textSecondary : context.textPrimary),
           decoration: InputDecoration(
-            prefixIcon: Icon(icon, color: isReadOnly ? Colors.grey : Colors.black54),
+            prefixIcon: Icon(icon, color: isReadOnly ? context.textMuted : context.textSecondary),
             filled: isReadOnly,
-            fillColor: isReadOnly ? Colors.grey[100] : Colors.white, // Warna abu jika dikunci
+            fillColor: isReadOnly ? context.dividerColor : Colors.white, // Warna abu jika dikunci
             border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
             enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
-              borderSide: BorderSide(color: isReadOnly ? Colors.transparent : Colors.grey),
+              borderSide: BorderSide(color: isReadOnly ? Colors.transparent : context.dividerColor),
             ),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
-              borderSide: BorderSide(color: isReadOnly ? Colors.transparent : AppColors.green, width: 2),
+              borderSide: BorderSide(color: isReadOnly ? Colors.transparent : context.primaryColor, width: 2),
             ),
           ),
         ),
         if (isReadOnly)
           Padding(
-            padding: const EdgeInsets.only(top: 4, left: 4),
+            padding: EdgeInsets.only(top: 4, left: 4),
             child: Text(
               "*Nama tidak dapat diubah.",
-              style: GoogleFonts.inter(fontSize: 10, color: Colors.grey, fontStyle: FontStyle.italic),
+              style: GoogleFonts.inter(fontSize: 10, color: context.textMuted, fontStyle: FontStyle.italic),
             ),
           ),
       ],

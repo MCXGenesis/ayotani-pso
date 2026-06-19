@@ -5,7 +5,7 @@ import '../theme/app_colors.dart';
 class GamificationWidget extends StatefulWidget {
   final UserProfile? userProfile;
 
-  const GamificationWidget({
+  GamificationWidget({
     super.key,
     required this.userProfile,
   });
@@ -22,7 +22,7 @@ class _GamificationWidgetState extends State<GamificationWidget> with SingleTick
   void initState() {
     super.initState();
     _gemAnimationController = AnimationController(
-      duration: const Duration(milliseconds: 600),
+      duration: Duration(milliseconds: 600),
       vsync: this,
     );
     _gemScale = Tween<double>(begin: 1.0, end: 1.2).animate(
@@ -63,19 +63,19 @@ class _GamificationWidgetState extends State<GamificationWidget> with SingleTick
       children: [
         // Main gamification card
         Container(
-          padding: const EdgeInsets.all(20),
+          padding: EdgeInsets.all(20),
           decoration: BoxDecoration(
             gradient: LinearGradient(
-              colors: [AppColors.green, AppColors.green.withOpacity(0.8)],
+              colors: [context.primaryColor, context.primaryColor.withOpacity(0.8)],
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
             ),
             borderRadius: BorderRadius.circular(16),
             boxShadow: [
               BoxShadow(
-                color: AppColors.green.withOpacity(0.3),
+                color: context.primaryColor.withOpacity(0.3),
                 blurRadius: 12,
-                offset: const Offset(0, 6),
+                offset: Offset(0, 6),
               ),
             ],
           ),
@@ -89,7 +89,7 @@ class _GamificationWidgetState extends State<GamificationWidget> with SingleTick
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text(
+                      Text(
                         'Level',
                         style: TextStyle(
                           color: Colors.white70,
@@ -97,13 +97,13 @@ class _GamificationWidgetState extends State<GamificationWidget> with SingleTick
                           fontWeight: FontWeight.w500,
                         ),
                       ),
-                      const SizedBox(height: 4),
+                      SizedBox(height: 4),
                       Text(
                         '${profile.level}',
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 48,
                           fontWeight: FontWeight.w900,
-                          color: Colors.white,
+                          color: context.cardBg,
                         ),
                       ),
                     ],
@@ -114,7 +114,7 @@ class _GamificationWidgetState extends State<GamificationWidget> with SingleTick
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.end,
                       children: [
-                        const Text(
+                        Text(
                           'Gems',
                           style: TextStyle(
                             color: Colors.white70,
@@ -122,15 +122,15 @@ class _GamificationWidgetState extends State<GamificationWidget> with SingleTick
                             fontWeight: FontWeight.w500,
                           ),
                         ),
-                        const SizedBox(height: 4),
+                        SizedBox(height: 4),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.end,
                           children: [
-                            const Icon(Icons.star, color: Colors.amber, size: 32),
-                            const SizedBox(width: 8),
+                            Icon(Icons.star, color: Colors.amber, size: 32),
+                            SizedBox(width: 8),
                             Text(
                               '${profile.gems}',
-                              style: const TextStyle(
+                              style: TextStyle(
                                 fontSize: 40,
                                 fontWeight: FontWeight.w900,
                                 color: Colors.amber,
@@ -143,7 +143,7 @@ class _GamificationWidgetState extends State<GamificationWidget> with SingleTick
                   ),
                 ],
               ),
-              const SizedBox(height: 20),
+              SizedBox(height: 20),
               // Level progress bar
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -151,7 +151,7 @@ class _GamificationWidgetState extends State<GamificationWidget> with SingleTick
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      const Text(
+                      Text(
                         'Pengalaman',
                         style: TextStyle(
                           color: Colors.white70,
@@ -160,20 +160,20 @@ class _GamificationWidgetState extends State<GamificationWidget> with SingleTick
                       ),
                       Text(
                         '$currentExp / $nextLevelExp XP',
-                        style: const TextStyle(
+                        style: TextStyle(
                           color: Colors.white70,
                           fontSize: 11,
                         ),
                       ),
                     ],
                   ),
-                  const SizedBox(height: 8),
+                  SizedBox(height: 8),
                   ClipRRect(
                     borderRadius: BorderRadius.circular(8),
                     child: LinearProgressIndicator(
                       minHeight: 8,
                       value: expPercentage,
-                      backgroundColor: Colors.white.withOpacity(0.2),
+                      backgroundColor: context.cardBg.withOpacity(0.2),
                       valueColor: AlwaysStoppedAnimation<Color>(
                         Colors.amber[300] ?? Colors.amber,
                       ),
@@ -184,26 +184,26 @@ class _GamificationWidgetState extends State<GamificationWidget> with SingleTick
             ],
           ),
         ),
-        const SizedBox(height: 16),
+        SizedBox(height: 16),
         // Achievements/milestones section
         Container(
-          padding: const EdgeInsets.all(16),
+          padding: EdgeInsets.all(16),
           decoration: BoxDecoration(
-            color: Colors.white,
+            color: context.cardBg,
             borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: Colors.grey[200]!),
+            border: Border.all(color: context.dividerColor),
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text(
+              Text(
                 'Pencapaian',
                 style: TextStyle(
                   fontSize: 14,
                   fontWeight: FontWeight.w700,
                 ),
               ),
-              const SizedBox(height: 12),
+              SizedBox(height: 12),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
@@ -244,26 +244,26 @@ class _GamificationWidgetState extends State<GamificationWidget> with SingleTick
           height: 60,
           decoration: BoxDecoration(
             shape: BoxShape.circle,
-            color: isUnlocked ? AppColors.green.withOpacity(0.2) : Colors.grey[200],
+            color: isUnlocked ? context.primaryColor.withOpacity(0.2) : context.dividerColor,
             border: Border.all(
-              color: isUnlocked ? AppColors.green : Colors.grey[300]!,
+              color: isUnlocked ? context.primaryColor : context.dividerColor,
               width: 2,
             ),
           ),
           child: Icon(
             icon,
-            color: isUnlocked ? AppColors.green : Colors.grey[400],
+            color: isUnlocked ? context.primaryColor : context.textMuted,
             size: 28,
           ),
         ),
-        const SizedBox(height: 8),
+        SizedBox(height: 8),
         Text(
           label,
           textAlign: TextAlign.center,
           style: TextStyle(
             fontSize: 10,
             fontWeight: FontWeight.w600,
-            color: isUnlocked ? Colors.black87 : Colors.grey[400],
+            color: isUnlocked ? context.textPrimary : context.textMuted,
           ),
         ),
       ],
@@ -273,16 +273,16 @@ class _GamificationWidgetState extends State<GamificationWidget> with SingleTick
   /// Build loading card
   Widget _buildLoadingCard() {
     return Container(
-      padding: const EdgeInsets.all(20),
+      padding: EdgeInsets.all(20),
       decoration: BoxDecoration(
         gradient: LinearGradient(
-          colors: [AppColors.green.withOpacity(0.3), AppColors.green.withOpacity(0.1)],
+          colors: [context.primaryColor.withOpacity(0.3), context.primaryColor.withOpacity(0.1)],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
         borderRadius: BorderRadius.circular(16),
       ),
-      child: const SizedBox(
+      child: SizedBox(
         height: 150,
         child: Center(
           child: CircularProgressIndicator(),

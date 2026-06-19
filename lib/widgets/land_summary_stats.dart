@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:ayotani/theme/app_colors.dart';
 import '../models/land_model.dart';
 
 class LandSummaryStats extends StatefulWidget {
   final Land? selectedLand;
 
-  const LandSummaryStats({super.key, this.selectedLand});
+  LandSummaryStats({super.key, this.selectedLand});
 
   @override
   State<LandSummaryStats> createState() => _LandSummaryStatsState();
@@ -13,7 +14,7 @@ class LandSummaryStats extends StatefulWidget {
 class _LandSummaryStatsState extends State<LandSummaryStats> {
   @override
   Widget build(BuildContext context) {
-    if (widget.selectedLand == null) return const SizedBox();
+    if (widget.selectedLand == null) return SizedBox();
 
     return _buildStatsGrid(widget.selectedLand!);
   }
@@ -36,17 +37,17 @@ class _LandSummaryStatsState extends State<LandSummaryStats> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Padding(
+        Padding(
           padding: EdgeInsets.symmetric(horizontal: 16),
           child: Text('Ringkasan Finansial', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700)),
         ),
-        const SizedBox(height: 12),
+        SizedBox(height: 12),
         Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16),
+          padding: EdgeInsets.symmetric(horizontal: 16),
           child: GridView.count(
             crossAxisCount: 2,
             shrinkWrap: true,
-            physics: const NeverScrollableScrollPhysics(),
+            physics: NeverScrollableScrollPhysics(),
             mainAxisSpacing: 12,
             crossAxisSpacing: 12,
             childAspectRatio: 1.4,
@@ -97,12 +98,12 @@ class _LandSummaryStatsState extends State<LandSummaryStats> {
 
   Widget _buildStatCard({required String title, required String value, required IconData icon, required Color color, String? subtitle}) {
     return Container(
-      padding: const EdgeInsets.all(12),
+      padding: EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: context.cardBg,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Colors.grey[200]!),
-        boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.03), blurRadius: 4, offset: const Offset(0, 2))],
+        border: Border.all(color: context.dividerColor),
+        boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.03), blurRadius: 4, offset: Offset(0, 2))],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -111,7 +112,7 @@ class _LandSummaryStatsState extends State<LandSummaryStats> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(title, style: TextStyle(fontSize: 12, color: Colors.grey[600], fontWeight: FontWeight.w500)),
+              Text(title, style: TextStyle(fontSize: 12, color: context.textSecondary, fontWeight: FontWeight.w500)),
               Icon(icon, size: 20, color: color),
             ],
           ),
@@ -119,7 +120,7 @@ class _LandSummaryStatsState extends State<LandSummaryStats> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(value, style: TextStyle(fontSize: 16, fontWeight: FontWeight.w800, color: color)),
-              if (subtitle != null) Text(subtitle, style: TextStyle(fontSize: 10, color: Colors.grey[500])),
+              if (subtitle != null) Text(subtitle, style: TextStyle(fontSize: 10, color: context.textMuted)),
             ],
           )
         ],

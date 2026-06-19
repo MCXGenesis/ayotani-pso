@@ -6,7 +6,7 @@ import '../theme/app_colors.dart';
 class PendingTasksWidget extends StatefulWidget {
   final VoidCallback? onTaskCompleted;
 
-  const PendingTasksWidget({
+  PendingTasksWidget({
     super.key,
     this.onTaskCompleted,
   });
@@ -54,19 +54,19 @@ class _PendingTasksWidgetState extends State<PendingTasksWidget> {
         // Navigate to monitoring screen or show task details
       },
       child: Container(
-        padding: const EdgeInsets.all(16),
+        padding: EdgeInsets.all(16),
         decoration: BoxDecoration(
           gradient: LinearGradient(
-            colors: [AppColors.teal.withOpacity(0.9), AppColors.teal.withOpacity(0.7)],
+            colors: [context.secondaryColor.withOpacity(0.9), context.secondaryColor.withOpacity(0.7)],
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
           ),
           borderRadius: BorderRadius.circular(12),
           boxShadow: [
             BoxShadow(
-              color: AppColors.teal.withOpacity(0.2),
+              color: context.secondaryColor.withOpacity(0.2),
               blurRadius: 8,
-              offset: const Offset(0, 4),
+              offset: Offset(0, 4),
             ),
           ],
         ),
@@ -80,28 +80,28 @@ class _PendingTasksWidgetState extends State<PendingTasksWidget> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text(
+                      Text(
                         'Tugas Selanjutnya',
                         style: TextStyle(color: Colors.white70, fontSize: 11),
                       ),
-                      const SizedBox(height: 6),
+                      SizedBox(height: 6),
                       Text(
                         taskTitle ?? 'Tugas',
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis,
-                        style: const TextStyle(
-                          color: Colors.white,
+                        style: TextStyle(
+                          color: context.cardBg,
                           fontSize: 16,
                           fontWeight: FontWeight.w700,
                         ),
                       ),
                       if (taskDesc != null) ...[
-                        const SizedBox(height: 6),
+                        SizedBox(height: 6),
                         Text(
                           taskDesc,
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
-                          style: const TextStyle(
+                          style: TextStyle(
                             color: Colors.white70,
                             fontSize: 12,
                           ),
@@ -110,23 +110,23 @@ class _PendingTasksWidgetState extends State<PendingTasksWidget> {
                     ],
                   ),
                 ),
-                const SizedBox(width: 12),
+                SizedBox(width: 12),
                 Column(
                   children: [
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                      padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                       decoration: BoxDecoration(
                         color: Colors.amber[400],
                         borderRadius: BorderRadius.circular(6),
                       ),
                       child: Row(
                         children: [
-                          const Icon(Icons.star, color: Colors.white, size: 14),
-                          const SizedBox(width: 4),
+                          Icon(Icons.star, color: context.cardBg, size: 14),
+                          SizedBox(width: 4),
                           Text(
                             '+$rewardGems',
-                            style: const TextStyle(
-                              color: Colors.white,
+                            style: TextStyle(
+                              color: context.cardBg,
                               fontWeight: FontWeight.w600,
                               fontSize: 12,
                             ),
@@ -134,8 +134,8 @@ class _PendingTasksWidgetState extends State<PendingTasksWidget> {
                         ],
                       ),
                     ),
-                    const SizedBox(height: 8),
-                    const Icon(Icons.arrow_forward, color: Colors.white, size: 20),
+                    SizedBox(height: 8),
+                    Icon(Icons.arrow_forward, color: context.cardBg, size: 20),
                   ],
                 ),
               ],
@@ -149,12 +149,12 @@ class _PendingTasksWidgetState extends State<PendingTasksWidget> {
   /// Build loading card
   Widget _buildLoadingCard() {
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.grey[100],
+        color: context.dividerColor,
         borderRadius: BorderRadius.circular(12),
       ),
-      child: const SizedBox(
+      child: SizedBox(
         height: 100,
         child: Center(
           child: CircularProgressIndicator(),
@@ -166,7 +166,7 @@ class _PendingTasksWidgetState extends State<PendingTasksWidget> {
   /// Build error card
   Widget _buildErrorCard() {
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: Colors.red[50],
         border: Border.all(color: Colors.red[200]!),
@@ -182,7 +182,7 @@ class _PendingTasksWidgetState extends State<PendingTasksWidget> {
   /// Build no task card
   Widget _buildNoTaskCard() {
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: EdgeInsets.all(16),
       decoration: BoxDecoration(
         gradient: LinearGradient(
           colors: [Colors.green[50]!, Colors.green[100]!],
@@ -190,12 +190,12 @@ class _PendingTasksWidgetState extends State<PendingTasksWidget> {
           end: Alignment.bottomRight,
         ),
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: AppColors.green.withOpacity(0.3)),
+        border: Border.all(color: context.primaryColor.withOpacity(0.3)),
       ),
       child: Row(
         children: [
-          Icon(Icons.check_circle, color: AppColors.green, size: 32),
-          const SizedBox(width: 12),
+          Icon(Icons.check_circle, color: context.primaryColor, size: 32),
+          SizedBox(width: 12),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,

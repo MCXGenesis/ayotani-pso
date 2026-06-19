@@ -1,59 +1,61 @@
 import 'package:flutter/material.dart';
+import 'package:ayotani/theme/app_colors.dart';
 import '../../theme/app_colors.dart';
 
 class CommunityScreen extends StatelessWidget {
-  const CommunityScreen({super.key});
+  CommunityScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey[50],
+      backgroundColor: context.dividerColor,
       appBar: AppBar(
-        title: const Text(
+        title: Text(
           'Komunitas Tani', 
-          style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold)
+          style: TextStyle(color: context.textPrimary, fontWeight: FontWeight.bold)
         ),
-        backgroundColor: Colors.white,
+        backgroundColor: context.scaffoldBg,
         elevation: 0,
         centerTitle: false,
         actions: [
           IconButton(
-            icon: const Icon(Icons.search, color: Colors.black),
+            icon: Icon(Icons.search, color: context.textPrimary),
             onPressed: () {},
           ),
         ],
       ),
       body: ListView(
-        padding: const EdgeInsets.all(16),
+        padding: EdgeInsets.all(16),
         children: [
           Container(
-            padding: const EdgeInsets.all(16),
+            padding: EdgeInsets.all(16),
             decoration: BoxDecoration(
-              color: Colors.white,
+              color: context.scaffoldBg,
               borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: Colors.grey.shade200),
+              border: Border.all(color: context.dividerColor),
             ),
             child: Row(
               children: [
                 CircleAvatar(
-                  backgroundColor: AppColors.green.withOpacity(0.1),
-                  child: const Icon(Icons.person, color: AppColors.green),
+                  backgroundColor: context.primaryColor.withOpacity(0.1),
+                  child: Icon(Icons.person, color: context.primaryColor),
                 ),
-                const SizedBox(width: 12),
-                const Text(
+                SizedBox(width: 12),
+                Text(
                   "Apa yang anda tanam hari ini?", 
-                  style: TextStyle(color: Colors.grey, fontSize: 14)
+                  style: TextStyle(color: context.bgGrey, fontSize: 14)
                 ),
               ],
             ),
           ),
-          const SizedBox(height: 24),
-          const Text(
+          SizedBox(height: 24),
+          Text(
             "Diskusi Terbaru",
             style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
           ),
-          const SizedBox(height: 16),
+          SizedBox(height: 16),
           _buildPostItem(
+            context,
             name: "Budi Santoso",
             role: "Petani Cabai",
             time: "2 jam yang lalu",
@@ -62,6 +64,7 @@ class CommunityScreen extends StatelessWidget {
             comments: 5,
           ),
           _buildPostItem(
+            context,
             name: "Siti Aminah",
             role: "Pemula",
             time: "5 jam yang lalu",
@@ -75,7 +78,8 @@ class CommunityScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildPostItem({
+  Widget _buildPostItem(
+    BuildContext context, {
     required String name,
     required String role,
     required String time,
@@ -85,16 +89,16 @@ class CommunityScreen extends StatelessWidget {
     bool hasImage = false,
   }) {
     return Container(
-      margin: const EdgeInsets.only(bottom: 16),
-      padding: const EdgeInsets.all(16),
+      margin: EdgeInsets.only(bottom: 16),
+      padding: EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: context.cardBg,
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withOpacity(0.03), 
             blurRadius: 8, 
-            offset: const Offset(0, 2)
+            offset: Offset(0, 2)
           )
         ],
       ),
@@ -104,23 +108,23 @@ class CommunityScreen extends StatelessWidget {
           Row(
             children: [
               CircleAvatar(
-                backgroundColor: Colors.grey[200],
-                child: Text(name[0], style: const TextStyle(color: AppColors.green, fontWeight: FontWeight.bold)),
+                backgroundColor: context.dividerColor,
+                child: Text(name[0], style: TextStyle(color: context.primaryColor, fontWeight: FontWeight.bold)),
               ),
-              const SizedBox(width: 12),
+              SizedBox(width: 12),
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(name, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
-                  Text("$role • $time", style: const TextStyle(fontSize: 12, color: Colors.grey)),
+                  Text(name, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
+                  Text("$role • $time", style: TextStyle(fontSize: 12, color: context.bgGrey)),
                 ],
               ),
             ],
           ),
-          const SizedBox(height: 12),
-          Text(content, style: const TextStyle(height: 1.5)),
+          SizedBox(height: 12),
+          Text(content, style: TextStyle(height: 1.5)),
           if (hasImage) ...[
-            const SizedBox(height: 12),
+            SizedBox(height: 12),
             Container(
               height: 150, 
               width: double.infinity,
@@ -128,18 +132,18 @@ class CommunityScreen extends StatelessWidget {
                 color: Colors.green.shade50,
                 borderRadius: BorderRadius.circular(8),
               ),
-              child: const Center(
+              child: Center(
                 child: Icon(Icons.image, size: 50, color: Colors.green),
               ),
             ),
           ],
-          const SizedBox(height: 16),
-          const Divider(height: 1),
+          SizedBox(height: 16),
+          Divider(height: 1),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
-              TextButton.icon(onPressed: () {}, icon: const Icon(Icons.thumb_up_outlined, size: 18), label: Text("$likes")),
-              TextButton.icon(onPressed: () {}, icon: const Icon(Icons.comment_outlined, size: 18), label: Text("$comments")),
+              TextButton.icon(onPressed: () {}, icon: Icon(Icons.thumb_up_outlined, size: 18), label: Text("$likes")),
+              TextButton.icon(onPressed: () {}, icon: Icon(Icons.comment_outlined, size: 18), label: Text("$comments")),
             ],
           ),
         ],

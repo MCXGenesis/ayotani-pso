@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:ayotani/theme/app_colors.dart';
 
 class CircleSocialButton extends StatelessWidget {
-  const CircleSocialButton({super.key, required this.child, required this.onTap});
+  CircleSocialButton({super.key, required this.child, required this.onTap});
 
   final Widget child;
   final VoidCallback onTap;
@@ -10,17 +11,17 @@ class CircleSocialButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return InkWell(
       onTap: onTap,
-      customBorder: const CircleBorder(),
+      customBorder: CircleBorder(),
       child: Container(
         width: 52,
         height: 52,
         decoration: BoxDecoration(
           shape: BoxShape.circle,
-          color: Colors.white,
+          color: context.cardBg,
           boxShadow: [
             BoxShadow(
               blurRadius: 14,
-              offset: const Offset(0, 6),
+              offset: Offset(0, 6),
               color: Colors.black.withOpacity(0.08),
             )
           ],

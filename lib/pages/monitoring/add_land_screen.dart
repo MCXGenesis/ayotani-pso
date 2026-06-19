@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:ayotani/theme/app_colors.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_map/flutter_map.dart'; 
 import 'package:latlong2/latlong.dart';
@@ -10,7 +11,7 @@ import '../../services/weather_service.dart';
 import '../../providers/auth_provider.dart';
 
 class AddLandScreen extends StatefulWidget {
-  const AddLandScreen({super.key});
+  AddLandScreen({super.key});
 
   @override
   State<AddLandScreen> createState() => _AddLandScreenState();
@@ -34,7 +35,7 @@ class _AddLandScreenState extends State<AddLandScreen> {
   DateTime? _harvestDate;
   
   // Default Location (Surabaya)
-  LatLng _selectedLocation = const LatLng(-7.2575, 112.7521); 
+  LatLng _selectedLocation = LatLng(-7.2575, 112.7521); 
   String _addressPreview = "Pilih lokasi di peta"; // Stores fetched address
   
   Map<String, dynamic>? _currentWeather;
@@ -90,25 +91,25 @@ class _AddLandScreenState extends State<AddLandScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: context.scaffoldBg,
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        backgroundColor: context.scaffoldBg,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.black),
+          icon: Icon(Icons.arrow_back, color: context.textPrimary),
           onPressed: () {
             if (_currentPage > 0) {
-              _pageController.previousPage(duration: const Duration(milliseconds: 300), curve: Curves.easeInOut);
+              _pageController.previousPage(duration: Duration(milliseconds: 300), curve: Curves.easeInOut);
             } else {
               Navigator.pop(context);
             }
           },
         ),
-        title: Text(_currentPage == 1 ? 'Pilih Lokasi Real-Time' : (_currentPage == 2 ? 'Detail Lahan' : ''), style: const TextStyle(color: Colors.black, fontWeight: FontWeight.bold)),
+        title: Text(_currentPage == 1 ? 'Pilih Lokasi Real-Time' : (_currentPage == 2 ? 'Detail Lahan' : ''), style: TextStyle(color: context.textPrimary, fontWeight: FontWeight.bold)),
       ),
       body: PageView(
         controller: _pageController,
-        physics: const NeverScrollableScrollPhysics(),
+        physics: NeverScrollableScrollPhysics(),
         onPageChanged: (index) => setState(() => _currentPage = index),
         children: [
           _buildIntroStep(),
@@ -122,32 +123,32 @@ class _AddLandScreenState extends State<AddLandScreen> {
   // STEP 1: Intro
   Widget _buildIntroStep() {
     return Padding(
-      padding: const EdgeInsets.all(24.0),
+      padding: EdgeInsets.all(24.0),
       child: Column(
         children: [
           Expanded(
             child: Container(
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(20),
-                image: const DecorationImage(
+                image: DecorationImage(
                   image: NetworkImage('https://placehold.co/800x600/0A3D2F/FFFFFF.png?text=Mulai+Bertani'),
                   fit: BoxFit.cover,
                 ),
               ),
             ),
           ),
-          const SizedBox(height: 32),
-          const Text('Ayo Mulai Bertani', style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold), textAlign: TextAlign.center),
-          const SizedBox(height: 12),
-          const Text('Atur lahan pertanianmu dengan data real-time dan perencanaan finansial.', style: TextStyle(fontSize: 14, color: Colors.grey, height: 1.5), textAlign: TextAlign.center),
-          const SizedBox(height: 40),
+          SizedBox(height: 32),
+          Text('Ayo Mulai Bertani', style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold), textAlign: TextAlign.center),
+          SizedBox(height: 12),
+          Text('Atur lahan pertanianmu dengan data real-time dan perencanaan finansial.', style: TextStyle(fontSize: 14, color: context.textMuted, height: 1.5), textAlign: TextAlign.center),
+          SizedBox(height: 40),
           SizedBox(
             width: double.infinity,
             height: 50,
             child: ElevatedButton(
-              onPressed: () => _pageController.nextPage(duration: const Duration(milliseconds: 300), curve: Curves.easeInOut),
-              style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFF0A3D2F), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(25))),
-              child: const Text('Mulai', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16)),
+              onPressed: () => _pageController.nextPage(duration: Duration(milliseconds: 300), curve: Curves.easeInOut),
+              style: ElevatedButton.styleFrom(backgroundColor: Color(0xFF0A3D2F), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(25))),
+              child: Text('Mulai', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16)),
             ),
           ),
         ],
@@ -183,7 +184,7 @@ class _AddLandScreenState extends State<AddLandScreen> {
                   point: _selectedLocation,
                   width: 50,
                   height: 50,
-                  child: const Icon(Icons.location_on, color: Colors.red, size: 50),
+                  child: Icon(Icons.location_on, color: Colors.red, size: 50),
                 ),
               ],
             ),
@@ -195,9 +196,9 @@ class _AddLandScreenState extends State<AddLandScreen> {
           Positioned(
             top: 20, left: 20, right: 20,
             child: Container(
-              padding: const EdgeInsets.all(16),
+              padding: EdgeInsets.all(16),
               decoration: BoxDecoration(
-                color: Colors.white.withOpacity(0.95),
+                color: context.cardBg.withOpacity(0.95),
                 borderRadius: BorderRadius.circular(16),
                 boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.1), blurRadius: 10)],
               ),
@@ -205,22 +206,56 @@ class _AddLandScreenState extends State<AddLandScreen> {
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
                   Column(children: [
-                    const Icon(Icons.thermostat, color: Colors.orange),
-                    const SizedBox(height: 4),
-                    Text('${_currentWeather!['temperature'] ?? _currentWeather!['temperature_2m'] ?? '-'}°C', style: const TextStyle(fontWeight: FontWeight.bold)),
-                    const Text('Suhu', style: TextStyle(fontSize: 10, color: Colors.grey)),
+                    Icon(Icons.thermostat, color: Colors.orange),
+                    SizedBox(height: 4),
+                    Text('${_currentWeather!['temperature'] ?? _currentWeather!['temperature_2m'] ?? '-'}°C', style: TextStyle(fontWeight: FontWeight.bold)),
+                    Text('Suhu', style: TextStyle(fontSize: 10, color: context.bgGrey)),
                   ]),
                   Column(children: [
-                    const Icon(Icons.location_city, color: Colors.green),
-                    const SizedBox(height: 4),
+                    Icon(Icons.location_city, color: Colors.green),
+                    SizedBox(height: 4),
                     // Show fetched address in the card
-                    SizedBox(width: 80, child: Text(_addressPreview, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 10), maxLines: 2, overflow: TextOverflow.ellipsis, textAlign: TextAlign.center)),
-                    const Text('Lokasi', style: TextStyle(fontSize: 10, color: Colors.grey)),
+                    SizedBox(width: 80, child: Text(_addressPreview, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 10), maxLines: 2, overflow: TextOverflow.ellipsis, textAlign: TextAlign.center)),
+                    Text('Lokasi', style: TextStyle(fontSize: 10, color: context.bgGrey)),
                   ]),
                 ],
               ),
             ),
           ),
+
+        Positioned(
+          bottom: 90, left: 20, right: 20,
+          child: GestureDetector(
+            onTap: () {
+              Navigator.pushNamed(
+                context,
+                '/weather',
+                arguments: {
+                  'lat': _selectedLocation.latitude,
+                  'lon': _selectedLocation.longitude,
+                },
+              );
+            },
+            child: Container(
+              height: 42,
+              alignment: Alignment.center,
+              decoration: BoxDecoration(
+                color: context.cardBg.withOpacity(0.9),
+                borderRadius: BorderRadius.circular(25),
+                border: Border.all(color: Color(0xFF0A3D2F).withOpacity(0.3)),
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(Icons.cloud, color: Color(0xFF0A3D2F), size: 16),
+                  SizedBox(width: 6),
+                  Text('Lihat Cuaca Lokasi Ini',
+                      style: TextStyle(color: Color(0xFF0A3D2F), fontWeight: FontWeight.w600, fontSize: 13)),
+                ],
+              ),
+            ),
+          ),
+        ),
 
         Positioned(
           bottom: 30, left: 20, right: 20,
@@ -230,10 +265,10 @@ class _AddLandScreenState extends State<AddLandScreen> {
               onPressed: () {
                 // Set the address controller to the fetched address, NOT coordinates
                 _locationController.text = _addressPreview;
-                _pageController.nextPage(duration: const Duration(milliseconds: 300), curve: Curves.easeInOut);
+                _pageController.nextPage(duration: Duration(milliseconds: 300), curve: Curves.easeInOut);
               },
-              style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFF0A3D2F), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(25))),
-              child: const Text('Pilih Lokasi Ini', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+              style: ElevatedButton.styleFrom(backgroundColor: Color(0xFF0A3D2F), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(25))),
+              child: Text('Pilih Lokasi Ini', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
             ),
           ),
         ),
@@ -244,7 +279,7 @@ class _AddLandScreenState extends State<AddLandScreen> {
   // STEP 3: Detailed Form
   Widget _buildFormStep() {
     return SingleChildScrollView(
-      padding: const EdgeInsets.all(24),
+      padding: EdgeInsets.all(24),
       child: Form(
         key: _formKey,
         child: Column(
@@ -252,16 +287,16 @@ class _AddLandScreenState extends State<AddLandScreen> {
           children: [
             _buildLabel('Nama Pertanian'),
             TextFormField(controller: _nameController, decoration: _inputDecoration('Contoh: Lahan Tomat A'), validator: (v) => v!.isEmpty ? 'Wajib diisi' : null),
-            const SizedBox(height: 16),
+            SizedBox(height: 16),
             
             _buildLabel('Lokasi'),
             // This will now show the Address instead of coords
             TextFormField(controller: _locationController, readOnly: true, decoration: _inputDecoration('Lokasi')),
-            const SizedBox(height: 16),
+            SizedBox(height: 16),
             
             _buildLabel('Tipe Tanaman'),
             _buildDropdown(hint: 'Pilih tanaman', value: _selectedPlantType, items: _plantTypes, onChanged: (val) => setState(() => _selectedPlantType = val)),
-            const SizedBox(height: 16),
+            SizedBox(height: 16),
             
             // Financials (Modal & Profit)
             Row(
@@ -273,7 +308,7 @@ class _AddLandScreenState extends State<AddLandScreen> {
                     TextFormField(controller: _modalController, keyboardType: TextInputType.number, decoration: _inputDecoration('5000')),
                   ],
                 )),
-                const SizedBox(width: 12),
+                SizedBox(width: 12),
                 Expanded(child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -283,7 +318,7 @@ class _AddLandScreenState extends State<AddLandScreen> {
                 )),
               ],
             ),
-            const SizedBox(height: 16),
+            SizedBox(height: 16),
 
             // Harvest Target
             _buildLabel('Target Panen (Total Kg)'),
@@ -292,23 +327,23 @@ class _AddLandScreenState extends State<AddLandScreen> {
               keyboardType: TextInputType.number, 
               decoration: _inputDecoration('Contoh: 1000').copyWith(suffixText: 'Kg')
             ),
-            const SizedBox(height: 16),
+            SizedBox(height: 16),
 
             _buildLabel('Tanggal Tanam'),
             _buildDatePicker(_plantingDate, (d) => setState(() => _plantingDate = d)),
-            const SizedBox(height: 16),
+            SizedBox(height: 16),
 
             _buildLabel('Perkiraan Panen'),
             _buildDatePicker(_harvestDate, (d) => setState(() => _harvestDate = d)),
             
-            const SizedBox(height: 40),
+            SizedBox(height: 40),
             
             SizedBox(
               width: double.infinity, height: 50,
               child: ElevatedButton(
                 onPressed: _isLoading ? null : _submit,
-                style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFF0A3D2F), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(25))),
-                child: _isLoading ? const CircularProgressIndicator(color: Colors.white) : const Text('Simpan Lahan', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16)),
+                style: ElevatedButton.styleFrom(backgroundColor: Color(0xFF0A3D2F), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(25))),
+                child: _isLoading ? CircularProgressIndicator(color: Colors.white) : Text('Simpan Lahan', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16)),
               ),
             ),
           ],
@@ -324,25 +359,25 @@ class _AddLandScreenState extends State<AddLandScreen> {
         if (d != null) onSelect(d);
       },
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-        decoration: BoxDecoration(border: Border.all(color: Colors.grey[300]!), borderRadius: BorderRadius.circular(8)),
+        padding: EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+        decoration: BoxDecoration(border: Border.all(color: context.dividerColor), borderRadius: BorderRadius.circular(8)),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Text(date == null ? 'Pilih Tanggal' : '${date.day}/${date.month}/${date.year}'),
-            const Icon(Icons.calendar_today, size: 20, color: Colors.grey),
+            Icon(Icons.calendar_today, size: 20, color: context.bgGrey),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildLabel(String text) => Padding(padding: const EdgeInsets.only(bottom: 8), child: Text(text, style: const TextStyle(fontWeight: FontWeight.w600)));
+  Widget _buildLabel(String text) => Padding(padding: EdgeInsets.only(bottom: 8), child: Text(text, style: TextStyle(fontWeight: FontWeight.w600)));
   InputDecoration _inputDecoration(String hint) => InputDecoration(hintText: hint, border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)));
   Widget _buildDropdown({required String hint, required String? value, required List<String> items, required Function(String?) onChanged}) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16),
-      decoration: BoxDecoration(border: Border.all(color: Colors.grey[300]!), borderRadius: BorderRadius.circular(8)),
+      padding: EdgeInsets.symmetric(horizontal: 16),
+      decoration: BoxDecoration(border: Border.all(color: context.dividerColor), borderRadius: BorderRadius.circular(8)),
       child: DropdownButtonHideUnderline(
         child: DropdownButton<String>(
           isExpanded: true, hint: Text(hint), value: value, items: items.map((e) => DropdownMenuItem(value: e, child: Text(e))).toList(), onChanged: onChanged

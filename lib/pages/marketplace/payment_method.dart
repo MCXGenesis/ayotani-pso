@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:ayotani/theme/app_colors.dart';
 import '../../theme/app_colors.dart';
 
 class PaymentMethodScreen extends StatefulWidget {
-  const PaymentMethodScreen({Key? key}) : super(key: key);
+  PaymentMethodScreen({Key? key}) : super(key: key);
 
   @override
   State<PaymentMethodScreen> createState() => _PaymentMethodScreenState();
@@ -14,19 +15,19 @@ class _PaymentMethodScreenState extends State<PaymentMethodScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: context.scaffoldBg,
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        backgroundColor: context.scaffoldBg,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios, size: 18, color: Colors.black),
+          icon: Icon(Icons.arrow_back_ios, size: 18, color: context.textPrimary),
           onPressed: () => Navigator.pop(context),
         ),
-        title: const Text('Pilih Pembayaran', style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 16)),
+        title: Text('Pilih Pembayaran', style: TextStyle(color: context.textPrimary, fontWeight: FontWeight.bold, fontSize: 16)),
         centerTitle: true,
       ),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
+        padding: EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -36,7 +37,7 @@ class _PaymentMethodScreenState extends State<PaymentMethodScreen> {
               _buildOption('cc', 'Kartu Kredit/Debit', null, Icons.credit_card),
             ]),
             
-            const Padding(
+            Padding(
               padding: EdgeInsets.symmetric(vertical: 16),
               child: Text('E-wallet', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
             ),
@@ -45,7 +46,7 @@ class _PaymentMethodScreenState extends State<PaymentMethodScreen> {
               _buildOption('dana', 'DANA', null, Icons.account_balance_wallet, isLogo: true, color: Colors.blueAccent),
             ]),
 
-            const Padding(
+            Padding(
               padding: EdgeInsets.symmetric(vertical: 16),
               child: Text('Transfer Bank', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
             ),
@@ -61,10 +62,10 @@ class _PaymentMethodScreenState extends State<PaymentMethodScreen> {
         ),
       ),
       bottomNavigationBar: Container(
-        padding: const EdgeInsets.all(16),
+        padding: EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: Colors.white,
-          boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 10, offset: const Offset(0, -5))],
+          color: context.scaffoldBg,
+          boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 10, offset: Offset(0, -5))],
         ),
         child: SafeArea(
           child: SizedBox(
@@ -80,10 +81,10 @@ class _PaymentMethodScreenState extends State<PaymentMethodScreen> {
                 Navigator.pop(context, {'paymentId': _selectedId, 'paymentName': name});
               },
               style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors.green,
+                backgroundColor: context.primaryColor,
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
               ),
-              child: const Text('Pilih', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16)),
+              child: Text('Pilih', style: TextStyle(color: context.scaffoldBg, fontWeight: FontWeight.bold, fontSize: 16)),
             ),
           ),
         ),
@@ -100,28 +101,28 @@ class _PaymentMethodScreenState extends State<PaymentMethodScreen> {
     return GestureDetector(
       onTap: () => setState(() => _selectedId = id),
       child: Container(
-        margin: const EdgeInsets.only(bottom: 12),
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        margin: EdgeInsets.only(bottom: 12),
+        padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: context.cardBg,
           borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: Colors.grey[300]!),
+          border: Border.all(color: context.dividerColor),
         ),
         child: Row(
           children: [
             if (isLogo)
-              Icon(iconData, color: color ?? Colors.grey, size: 24) // Placeholder for Logo Image
+              Icon(iconData, color: color ?? context.bgGrey, size: 24) // Placeholder for Logo Image
             else
               Icon(iconData, color: Colors.teal, size: 24),
             
-            const SizedBox(width: 16),
+            SizedBox(width: 16),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(title, style: const TextStyle(fontWeight: FontWeight.w600)),
+                  Text(title, style: TextStyle(fontWeight: FontWeight.w600)),
                   if (subtitle != null)
-                    Text(subtitle, style: const TextStyle(color: Colors.grey, fontSize: 12)),
+                    Text(subtitle, style: TextStyle(color: context.bgGrey, fontSize: 12)),
                 ],
               ),
             ),
@@ -132,10 +133,10 @@ class _PaymentMethodScreenState extends State<PaymentMethodScreen> {
               height: 20,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                border: Border.all(color: isSelected ? AppColors.green : Colors.grey[300]!, width: 2),
+                border: Border.all(color: isSelected ? context.primaryColor : context.dividerColor, width: 2),
               ),
               child: isSelected 
-                  ? Center(child: Container(width: 10, height: 10, decoration: const BoxDecoration(color: AppColors.green, shape: BoxShape.circle))) 
+                  ? Center(child: Container(width: 10, height: 10, decoration: BoxDecoration(color: context.primaryColor, shape: BoxShape.circle))) 
                   : null,
             )
           ],

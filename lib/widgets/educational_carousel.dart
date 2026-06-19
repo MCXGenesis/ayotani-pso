@@ -5,7 +5,7 @@ import '../theme/app_colors.dart';
 import '../routes/app_routes.dart';
 
 class EducationalCarousel extends StatefulWidget {
-  const EducationalCarousel({super.key});
+  EducationalCarousel({super.key});
 
   @override
   State<EducationalCarousel> createState() => _EducationalCarouselState();
@@ -44,11 +44,11 @@ class _EducationalCarouselState extends State<EducationalCarousel> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16),
+          padding: EdgeInsets.symmetric(horizontal: 16),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Text(
+              Text(
                 'Video Belajar',
                 style: TextStyle(
                   fontSize: 16,
@@ -62,7 +62,7 @@ class _EducationalCarouselState extends State<EducationalCarousel> {
                   'Lihat Semua',
                   style: TextStyle(
                     fontSize: 12,
-                    color: AppColors.green,
+                    color: context.primaryColor,
                     fontWeight: FontWeight.w600,
                   ),
                 ),
@@ -70,17 +70,17 @@ class _EducationalCarouselState extends State<EducationalCarousel> {
             ],
           ),
         ),
-        const SizedBox(height: 12),
+        SizedBox(height: 12),
         SizedBox(
           height: 200,
           child: ListView.builder(
             scrollDirection: Axis.horizontal,
-            padding: const EdgeInsets.symmetric(horizontal: 16),
+            padding: EdgeInsets.symmetric(horizontal: 16),
             itemCount: contents.length,
             itemBuilder: (context, index) {
               final content = contents[index];
               return Padding(
-                padding: const EdgeInsets.only(right: 12),
+                padding: EdgeInsets.only(right: 12),
                 child: InkWell(
                   onTap: () {
                     Navigator.pushNamed(
@@ -108,14 +108,14 @@ class _EducationalCarouselState extends State<EducationalCarousel> {
     return Container(
       width: 160,
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: context.cardBg,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Colors.grey[200]!),
+        border: Border.all(color: context.dividerColor),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withOpacity(0.05),
             blurRadius: 4,
-            offset: const Offset(0, 2),
+            offset: Offset(0, 2),
           ),
         ],
       ),
@@ -127,7 +127,7 @@ class _EducationalCarouselState extends State<EducationalCarousel> {
             height: 100,
             decoration: BoxDecoration(
               color: difficultyColor.withOpacity(0.2),
-              borderRadius: const BorderRadius.only(
+              borderRadius: BorderRadius.only(
                 topLeft: Radius.circular(12),
                 topRight: Radius.circular(12),
               ),
@@ -141,7 +141,7 @@ class _EducationalCarouselState extends State<EducationalCarousel> {
             ),
           ),
           Padding(
-            padding: const EdgeInsets.all(10),
+            padding: EdgeInsets.all(10),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -149,15 +149,15 @@ class _EducationalCarouselState extends State<EducationalCarousel> {
                   content.title,
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 12,
                     fontWeight: FontWeight.w600,
                   ),
                 ),
-                const SizedBox(height: 6),
+                SizedBox(height: 6),
                 Container(
                   padding:
-                      const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
+                      EdgeInsets.symmetric(horizontal: 6, vertical: 3),
                   decoration: BoxDecoration(
                     color: difficultyColor.withOpacity(0.2),
                     borderRadius: BorderRadius.circular(4),
@@ -206,18 +206,18 @@ class _EducationalCarouselState extends State<EducationalCarousel> {
   /// Build loading carousel
   Widget _buildLoadingCarousel() {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16),
+      padding: EdgeInsets.symmetric(horizontal: 16),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
+          Text(
             'Video Belajar',
             style: TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.w700,
             ),
           ),
-          const SizedBox(height: 12),
+          SizedBox(height: 12),
           SizedBox(
             height: 200,
             child: ListView.builder(
@@ -225,14 +225,14 @@ class _EducationalCarouselState extends State<EducationalCarousel> {
               itemCount: 3,
               itemBuilder: (context, index) {
                 return Padding(
-                  padding: const EdgeInsets.only(right: 12),
+                  padding: EdgeInsets.only(right: 12),
                   child: Container(
                     width: 160,
                     decoration: BoxDecoration(
-                      color: Colors.grey[200],
+                      color: context.dividerColor,
                       borderRadius: BorderRadius.circular(12),
                     ),
-                    child: const Center(
+                    child: Center(
                       child: CircularProgressIndicator(),
                     ),
                   ),
@@ -248,9 +248,9 @@ class _EducationalCarouselState extends State<EducationalCarousel> {
   /// Build error carousel
   Widget _buildErrorCarousel() {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16),
+      padding: EdgeInsets.symmetric(horizontal: 16),
       child: Container(
-        padding: const EdgeInsets.all(16),
+        padding: EdgeInsets.all(16),
         decoration: BoxDecoration(
           color: Colors.red[50],
           border: Border.all(color: Colors.red[200]!),
@@ -267,16 +267,16 @@ class _EducationalCarouselState extends State<EducationalCarousel> {
   /// Build empty carousel
   Widget _buildEmptyCarousel() {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16),
+      padding: EdgeInsets.symmetric(horizontal: 16),
       child: Container(
-        padding: const EdgeInsets.all(16),
+        padding: EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: Colors.grey[100],
+          color: context.dividerColor,
           borderRadius: BorderRadius.circular(12),
         ),
-        child: const Text(
+        child: Text(
           'Video belajar belum tersedia',
-          style: TextStyle(color: Colors.grey),
+          style: TextStyle(color: context.bgGrey),
         ),
       ),
     );

@@ -1,26 +1,27 @@
 import 'package:flutter/material.dart';
+import 'package:ayotani/theme/app_colors.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class TermsScreen extends StatelessWidget {
-  const TermsScreen({super.key});
+  TermsScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: context.scaffoldBg,
       appBar: AppBar(
-        title: Text('Syarat & Ketentuan', style: GoogleFonts.inter(color: Colors.black)),
-        backgroundColor: Colors.white,
+        title: Text('Syarat & Ketentuan', style: GoogleFonts.inter(color: context.textPrimary)),
+        backgroundColor: context.scaffoldBg,
         elevation: 0,
-        iconTheme: const IconThemeData(color: Colors.black),
+        iconTheme: IconThemeData(color: Colors.black),
       ),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(24),
+        padding: EdgeInsets.all(24),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text("Syarat & Ketentuan Penggunaan", style: GoogleFonts.inter(fontSize: 18, fontWeight: FontWeight.bold)),
-            const SizedBox(height: 16),
+            SizedBox(height: 16),
             Text(
               "Selamat datang di aplikasi Ayo Tani. Dengan menggunakan aplikasi ini, Anda setuju untuk mematuhi syarat dan ketentuan berikut:\n\n"
               "1. Privasi Data\n"
@@ -32,7 +33,7 @@ class TermsScreen extends StatelessWidget {
               "4. Perubahan Layanan\n"
               "Kami berhak mengubah atau menghentikan layanan sewaktu-waktu tanpa pemberitahuan sebelumnya untuk keperluan maintenance.\n\n"
               "Hubungi layanan pelanggan jika ada pertanyaan lebih lanjut.",
-              style: GoogleFonts.inter(fontSize: 14, height: 1.6, color: Colors.grey[800]),
+              style: GoogleFonts.inter(fontSize: 14, height: 1.6, color: context.textPrimary),
             ),
           ],
         ),

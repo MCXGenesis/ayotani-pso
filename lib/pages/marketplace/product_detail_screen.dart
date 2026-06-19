@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:ayotani/theme/app_colors.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:provider/provider.dart';
@@ -12,7 +13,7 @@ import '../../routes/app_routes.dart';
 class ProductDetailScreen extends StatefulWidget {
   final Product product;
 
-  const ProductDetailScreen({
+  ProductDetailScreen({
     super.key,
     required this.product,
   });
@@ -55,7 +56,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
         SnackBar(
           content: Text('${widget.product.name} ditambahkan ke keranjang!'),
           backgroundColor: AppColors.green,
-          duration: const Duration(seconds: 1),
+          duration: Duration(seconds: 1),
         ),
       );
     }
@@ -64,7 +65,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: context.scaffoldBg,
       body: CustomScrollView(
         slivers: [
           SliverAppBar(
@@ -75,22 +76,22 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
             leading: _buildCircleBtn(Icons.arrow_back, () => Navigator.pop(context)),
             actions: [
               _buildCircleBtn(Icons.shopping_cart_outlined, () => Navigator.pushNamed(context, AppRoutes.cart)),
-              const SizedBox(width: 16),
+              SizedBox(width: 16),
             ],
             flexibleSpace: FlexibleSpaceBar(
               background: Stack(
                 children: [
                   Container(
-                    color: Colors.grey[100],
+                    color: context.dividerColor,
                     height: double.infinity,
                     width: double.infinity,
                     child: widget.product.imageUrl != null
                         ? CachedNetworkImage(
                             imageUrl: widget.product.imageUrl!,
                             fit: BoxFit.cover,
-                            placeholder: (_,__) => const Center(child: CircularProgressIndicator(color: AppColors.green)),
+                            placeholder: (_,__) => Center(child: CircularProgressIndicator(color: context.primaryColor)),
                           )
-                        : const Center(child: Icon(Icons.image, size: 80, color: Colors.grey)),
+                        : Center(child: Icon(Icons.image, size: 80, color: context.bgGrey)),
                   ),
                 ],
               ),
@@ -99,134 +100,134 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
           
           SliverToBoxAdapter(
             child: Container(
-              color: Colors.white,
+              color: context.scaffoldBg,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   // 1. Title and Price
                   Padding(
-                    padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
+                    padding: EdgeInsets.fromLTRB(16, 16, 16, 0),
                     child: Text(
                       widget.product.name,
                       style: GoogleFonts.inter(
                         fontSize: 20,
                         fontWeight: FontWeight.w700,
-                        color: Colors.black,
+                        color: context.textPrimary,
                       ),
                     ),
                   ),
                   Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                    padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                     child: Text(
                       'Rp${widget.product.price.toStringAsFixed(0)}',
                       style: GoogleFonts.inter(
                         fontSize: 22,
                         fontWeight: FontWeight.w700,
-                        color: AppColors.green,
+                        color: context.primaryColor,
                       ),
                     ),
                   ),
                   Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    padding: EdgeInsets.symmetric(horizontal: 16),
                     child: Row(
                       children: [
-                        Icon(Icons.inventory_2_outlined, size: 14, color: Colors.grey[600]),
-                        const SizedBox(width: 4),
+                        Icon(Icons.inventory_2_outlined, size: 14, color: context.textSecondary),
+                        SizedBox(width: 4),
                         Text(
                           widget.product.stock > 0 ? 'Stok tersedia: ${widget.product.stock}' : 'Stok habis',
-                          style: TextStyle(fontSize: 12, color: widget.product.stock > 0 ? Colors.grey[600] : Colors.red),
+                          style: TextStyle(fontSize: 12, color: widget.product.stock > 0 ? context.textSecondary : Colors.red),
                         )
                       ],
                     ),
                   ),
-                  const SizedBox(height: 16),
-                  const Divider(thickness: 4, color: Color(0xFFF5F5F5)),
+                  SizedBox(height: 16),
+                  Divider(thickness: 4, color: Color(0xFFF5F5F5)),
 
                   // 2. Description
                   Padding(
-                    padding: const EdgeInsets.all(16),
+                    padding: EdgeInsets.all(16),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const Text(
+                        Text(
                           'Deskripsi Produk',
                           style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
                         ),
-                        const SizedBox(height: 8),
+                        SizedBox(height: 8),
                         Text(
                           widget.product.description ?? 
                           'Tidak ada deskripsi tersedia for produk ini. Hubungi admin untuk informasi lebih lanjut.',
-                          style: GoogleFonts.inter(fontSize: 14, color: Colors.grey[800], height: 1.5),
+                          style: GoogleFonts.inter(fontSize: 14, color: context.textPrimary, height: 1.5),
                         ),
                       ],
                     ),
                   ),
-                  const Divider(thickness: 4, color: Color(0xFFF5F5F5)),
+                  Divider(thickness: 4, color: Color(0xFFF5F5F5)),
 
                   // 3. Shop Info (Static)
                   Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                    padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                     child: Row(
                       children: [
-                        const CircleAvatar(
+                        CircleAvatar(
                           radius: 20,
                           backgroundColor: Color(0xFFE0E0E0),
-                          child: Icon(Icons.store, color: Colors.grey),
+                          child: Icon(Icons.store, color: context.bgGrey),
                         ),
-                        const SizedBox(width: 12),
+                        SizedBox(width: 12),
                         Expanded(
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Row(
                                 children: [
-                                  const Text('Eka Farm Shop', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
-                                  const SizedBox(width: 4),
-                                  Icon(Icons.verified, size: 14, color: AppColors.green),
+                                  Text('Eka Farm Shop', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
+                                  SizedBox(width: 4),
+                                  Icon(Icons.verified, size: 14, color: context.primaryColor),
                                 ],
                               ),
-                              const SizedBox(height: 2),
-                              Text('Online 10 menit lalu', style: TextStyle(fontSize: 11, color: Colors.grey[500])),
+                              SizedBox(height: 2),
+                              Text('Online 10 menit lalu', style: TextStyle(fontSize: 11, color: context.textMuted)),
                             ],
                           ),
                         ),
                         OutlinedButton(
                           onPressed: () {},
                           style: OutlinedButton.styleFrom(
-                            side: const BorderSide(color: AppColors.green),
+                            side: BorderSide(color: context.primaryColor),
                             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6)),
-                            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 0),
-                            minimumSize: const Size(0, 32),
+                            padding: EdgeInsets.symmetric(horizontal: 16, vertical: 0),
+                            minimumSize: Size(0, 32),
                           ),
-                          child: const Text('Kunjungi', style: TextStyle(color: AppColors.green, fontSize: 12)),
+                          child: Text('Kunjungi', style: TextStyle(color: context.primaryColor, fontSize: 12)),
                         )
                       ],
                     ),
                   ),
-                  const Divider(thickness: 4, color: Color(0xFFF5F5F5)),
+                  Divider(thickness: 4, color: Color(0xFFF5F5F5)),
                   
                   // Recommendations
                   Container(
-                    color: const Color(0xFFF5F5F5),
-                    padding: const EdgeInsets.symmetric(vertical: 16),
+                    color: Color(0xFFF5F5F5),
+                    padding: EdgeInsets.symmetric(vertical: 16),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const Padding(
+                        Padding(
                           padding: EdgeInsets.symmetric(horizontal: 16),
                           child: Text('Rekomendasi Lainnya', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
                         ),
-                        const SizedBox(height: 12),
+                        SizedBox(height: 12),
                         SizedBox(
                           height: 220,
                           child: FutureBuilder<List<Product>>(
                             future: _recommendationsFuture,
                             builder: (context, snapshot) {
-                              if (!snapshot.hasData) return const SizedBox();
+                              if (!snapshot.hasData) return SizedBox();
                               final recommendations = snapshot.data!;
                               return ListView.builder(
                                 scrollDirection: Axis.horizontal,
-                                padding: const EdgeInsets.symmetric(horizontal: 16),
+                                padding: EdgeInsets.symmetric(horizontal: 16),
                                 itemCount: recommendations.length,
                                 itemBuilder: (context, index) => _buildRecommendationCard(context, recommendations[index]),
                               );
@@ -236,7 +237,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                       ],
                     ),
                   ),
-                  const SizedBox(height: 100), 
+                  SizedBox(height: 100), 
                 ],
               ),
             ),
@@ -245,11 +246,11 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
       ),
       bottomSheet: Container(
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: context.scaffoldBg,
           boxShadow: [
             BoxShadow(
               blurRadius: 10,
-              offset: const Offset(0, -4),
+              offset: Offset(0, -4),
               color: Colors.black.withOpacity(0.05),
             ),
           ],
@@ -260,15 +261,15 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
             // Chat Icon
             Container(
               decoration: BoxDecoration(
-                border: Border.all(color: Colors.grey[300]!),
+                border: Border.all(color: context.dividerColor),
                 borderRadius: BorderRadius.circular(8),
               ),
               child: IconButton(
-                icon: const Icon(Icons.chat_bubble_outline, color: Colors.grey),
+                icon: Icon(Icons.chat_bubble_outline, color: context.bgGrey),
                 onPressed: () {}, // Chat functionality to be implemented
               ),
             ),
-            const SizedBox(width: 12),
+            SizedBox(width: 12),
             
             // Add to Cart Button (Outlined)
             Expanded(
@@ -277,15 +278,15 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                 child: OutlinedButton(
                   onPressed: widget.product.stock > 0 ? () => _addToCart(navigate: false) : null,
                   style: OutlinedButton.styleFrom(
-                    side: const BorderSide(color: AppColors.green, width: 1.5),
+                    side: BorderSide(color: context.primaryColor, width: 1.5),
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
                   ),
-                  child: const Text('Keranjang', style: TextStyle(color: AppColors.green, fontWeight: FontWeight.bold)),
+                  child: Text('Keranjang', style: TextStyle(color: context.primaryColor, fontWeight: FontWeight.bold)),
                 ),
               ),
             ),
             
-            const SizedBox(width: 12),
+            SizedBox(width: 12),
             
             // Buy Now / Checkout Button (Filled)
             Expanded(
@@ -294,11 +295,11 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                 child: ElevatedButton(
                   onPressed: widget.product.stock > 0 ? () => _addToCart(navigate: true) : null,
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.green,
+                    backgroundColor: context.primaryColor,
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
                     elevation: 0,
                   ),
-                  child: const Text('Beli Langsung', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white)),
+                  child: Text('Beli Langsung', style: TextStyle(fontWeight: FontWeight.bold, color: context.scaffoldBg)),
                 ),
               ),
             ),
@@ -310,14 +311,14 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
 
   Widget _buildCircleBtn(IconData icon, VoidCallback onPressed) {
     return Container(
-      margin: const EdgeInsets.all(8),
+      margin: EdgeInsets.all(8),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: context.cardBg,
         shape: BoxShape.circle,
         boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.1), blurRadius: 8)],
       ),
       child: IconButton(
-        icon: Icon(icon, color: Colors.black, size: 20),
+        icon: Icon(icon, color: context.textPrimary, size: 20),
         onPressed: onPressed,
       ),
     );
@@ -328,35 +329,35 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
       onTap: () => Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => ProductDetailScreen(product: product))),
       child: Container(
         width: 140,
-        margin: const EdgeInsets.only(right: 12),
+        margin: EdgeInsets.only(right: 12),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: context.cardBg,
           borderRadius: BorderRadius.circular(8),
-          border: Border.all(color: Colors.grey[200]!),
+          border: Border.all(color: context.dividerColor),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Expanded(
               child: ClipRRect(
-                borderRadius: const BorderRadius.vertical(top: Radius.circular(8)),
+                borderRadius: BorderRadius.vertical(top: Radius.circular(8)),
                 child: CachedNetworkImage(
                   imageUrl: product.imageUrl ?? '',
                   fit: BoxFit.cover,
                   width: double.infinity,
-                  placeholder: (_,__) => Container(color: Colors.grey[100]),
-                  errorWidget: (_,__,___) => Container(color: Colors.grey[100], child: const Icon(Icons.image)),
+                  placeholder: (_,__) => Container(color: context.dividerColor),
+                  errorWidget: (_,__,___) => Container(color: context.dividerColor, child: Icon(Icons.image)),
                 ),
               ),
             ),
             Padding(
-              padding: const EdgeInsets.all(8),
+              padding: EdgeInsets.all(8),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(product.name, maxLines: 2, overflow: TextOverflow.ellipsis, style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
-                  const SizedBox(height: 4),
-                  Text('Rp${product.price.toStringAsFixed(0)}', style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: AppColors.green)),
+                  Text(product.name, maxLines: 2, overflow: TextOverflow.ellipsis, style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
+                  SizedBox(height: 4),
+                  Text('Rp${product.price.toStringAsFixed(0)}', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: context.primaryColor)),
                 ],
               ),
             )

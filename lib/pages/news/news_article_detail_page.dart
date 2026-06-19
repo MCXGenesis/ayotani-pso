@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:ayotani/theme/app_colors.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:intl/intl.dart';
@@ -11,7 +12,7 @@ import '../../theme/app_colors.dart';
 class NewsArticleDetailPage extends StatefulWidget {
   final int? articleId; // Accepts ID now
 
-  const NewsArticleDetailPage({super.key, this.articleId});
+  NewsArticleDetailPage({super.key, this.articleId});
 
   @override
   State<NewsArticleDetailPage> createState() => _NewsArticleDetailPageState();
@@ -56,25 +57,25 @@ class _NewsArticleDetailPageState extends State<NewsArticleDetailPage> {
 
   @override
   Widget build(BuildContext context) {
-    if (_isLoading) return const Scaffold(body: Center(child: CircularProgressIndicator(color: AppColors.green)));
-    if (_article == null) return const Scaffold(body: Center(child: Text("Artikel tidak ditemukan")));
+    if (_isLoading) return Scaffold(body: Center(child: CircularProgressIndicator(color: context.primaryColor)));
+    if (_article == null) return Scaffold(body: Center(child: Text("Artikel tidak ditemukan")));
 
     final date = _article!.publishedAt != null 
         ? DateFormat('dd MMMM yyyy – HH:mm').format(_article!.publishedAt!) 
         : 'Unknown Date';
 
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: context.scaffoldBg,
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        backgroundColor: context.scaffoldBg,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.black),
+          icon: Icon(Icons.arrow_back, color: context.textPrimary),
           onPressed: () => Navigator.pop(context),
         ),
         actions: [
-          IconButton(icon: const Icon(Icons.share_outlined, color: Colors.black), onPressed: () {}),
-          IconButton(icon: const Icon(Icons.bookmark_border, color: Colors.black), onPressed: () {}),
+          IconButton(icon: Icon(Icons.share_outlined, color: context.textPrimary), onPressed: () {}),
+          IconButton(icon: Icon(Icons.bookmark_border, color: context.textPrimary), onPressed: () {}),
         ],
       ),
       body: SingleChildScrollView(
@@ -89,12 +90,12 @@ class _NewsArticleDetailPageState extends State<NewsArticleDetailPage> {
                 width: double.infinity,
                 height: 250,
                 fit: BoxFit.cover,
-                placeholder: (_,__) => Container(color: Colors.grey[200]),
+                placeholder: (_,__) => Container(color: context.dividerColor),
               ),
             ),
             
             Padding(
-              padding: const EdgeInsets.all(20),
+              padding: EdgeInsets.all(20),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -102,31 +103,31 @@ class _NewsArticleDetailPageState extends State<NewsArticleDetailPage> {
                   Row(
                     children: [
                       Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                        decoration: BoxDecoration(color: AppColors.green.withOpacity(0.1), borderRadius: BorderRadius.circular(4)),
-                        child: Text(_article!.author ?? 'Admin', style: const TextStyle(color: AppColors.green, fontSize: 12, fontWeight: FontWeight.bold)),
+                        padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                        decoration: BoxDecoration(color: context.primaryColor.withOpacity(0.1), borderRadius: BorderRadius.circular(4)),
+                        child: Text(_article!.author ?? 'Admin', style: TextStyle(color: context.primaryColor, fontSize: 12, fontWeight: FontWeight.bold)),
                       ),
-                      const SizedBox(width: 12),
-                      Text(date, style: const TextStyle(color: Colors.grey, fontSize: 12)),
+                      SizedBox(width: 12),
+                      Text(date, style: TextStyle(color: context.bgGrey, fontSize: 12)),
                     ],
                   ),
-                  const SizedBox(height: 16),
+                  SizedBox(height: 16),
                   
                   // Title
                   Text(
                     _article!.title,
                     style: GoogleFonts.inter(fontSize: 22, fontWeight: FontWeight.bold, height: 1.3),
                   ),
-                  const SizedBox(height: 24),
+                  SizedBox(height: 24),
                   
                   // Body (Simple Text Rendering)
                   Text(
                     _article!.contentBody ?? _article!.description,
-                    style: GoogleFonts.lora(fontSize: 16, height: 1.8, color: Colors.grey[800]), 
+                    style: GoogleFonts.lora(fontSize: 16, height: 1.8, color: context.textPrimary), 
                   ),
                   
-                  const SizedBox(height: 30),
-                  const Divider(),
+                  SizedBox(height: 30),
+                  Divider(),
                   
                   // Interaction
                   _buildInteractionBar(),
@@ -147,9 +148,9 @@ class _NewsArticleDetailPageState extends State<NewsArticleDetailPage> {
           onTap: () => setState(() => isLiked = !isLiked),
           child: Row(
             children: [
-              Icon(isLiked ? Icons.thumb_up : Icons.thumb_up_outlined, color: isLiked ? Colors.blue : Colors.grey),
-              const SizedBox(width: 8),
-              Text('${isLiked ? likeCount + 1 : likeCount} Likes', style: const TextStyle(fontWeight: FontWeight.bold)),
+              Icon(isLiked ? Icons.thumb_up : Icons.thumb_up_outlined, color: isLiked ? Colors.blue : context.textMuted),
+              SizedBox(width: 8),
+              Text('${isLiked ? likeCount + 1 : likeCount} Likes', style: TextStyle(fontWeight: FontWeight.bold)),
             ],
           ),
         ),
@@ -163,9 +164,9 @@ class _NewsArticleDetailPageState extends State<NewsArticleDetailPage> {
           },
           child: Row(
             children: [
-              const Icon(Icons.comment_outlined, color: Colors.grey),
-              const SizedBox(width: 8),
-              const Text('Comments', style: TextStyle(fontWeight: FontWeight.bold)),
+              Icon(Icons.comment_outlined, color: context.textMuted),
+              SizedBox(width: 8),
+              Text('Comments', style: TextStyle(fontWeight: FontWeight.bold)),
             ],
           ),
         ),
