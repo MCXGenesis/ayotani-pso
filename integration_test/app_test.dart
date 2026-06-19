@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:integration_test/integration_test.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -13,6 +15,19 @@ void main() {
     url: 'https://placeholder.supabase.co',
     anonKey: 'placeholder_key',
   );
+
+  // Suppress GoogleFonts async errors that occur after test completion
+  setUp(() {
+    GoogleFonts.config.allowRuntimeFetching = false;
+    final originalOnError = FlutterError.onError;
+    FlutterError.onError = (FlutterErrorDetails details) {
+      final msg = details.exception.toString();
+      if (msg.contains('GoogleFonts') || msg.contains('google_fonts')) {
+        return; // Suppress font loading errors in CI
+      }
+      originalOnError?.call(details);
+    };
+  });
 
   // ============================================================
   // AUTH FLOW E2E TESTS

@@ -11,6 +11,12 @@ import 'package:ayotani/providers/cart_provider.dart';
 import 'package:ayotani/routes/app_routes.dart';
 import 'package:ayotani/theme/app_colors.dart';
 
+/// Call this in setUp() or at the top of main() in each test file
+/// to suppress GoogleFonts async errors that fire after tests complete.
+void suppressGoogleFontsErrors() {
+  GoogleFonts.config.allowRuntimeFetching = false;
+}
+
 /// A test wrapper that sets up the app with providers and optional initial route.
 /// This avoids requiring real Supabase initialization for E2E widget tests.
 class TestApp extends StatelessWidget {
@@ -26,14 +32,16 @@ class TestApp extends StatelessWidget {
     HttpOverrides.global = TestHttpOverrides();
     GoogleFonts.config.allowRuntimeFetching = false;
     
-    // Ignore image loading / codec exceptions in tests to prevent flakiness
+    // Ignore image loading / codec exceptions and GoogleFonts errors in tests to prevent flakiness
     final originalOnError = FlutterError.onError;
     FlutterError.onError = (FlutterErrorDetails details) {
       final exceptionStr = details.exception.toString();
       if (exceptionStr.contains('Codec failed') ||
           exceptionStr.contains('image codec') ||
           exceptionStr.contains('ImageCodecException') ||
-          exceptionStr.contains('Image resource service')) {
+          exceptionStr.contains('Image resource service') ||
+          exceptionStr.contains('GoogleFonts') ||
+          exceptionStr.contains('google_fonts')) {
         return;
       }
       originalOnError?.call(details);
