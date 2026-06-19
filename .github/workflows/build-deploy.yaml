@@ -270,3 +270,33 @@ jobs:
             --port=443 \
             --timeout=10 \
             --period=1
+
+  # ---------- PHASE 7: AUTO-MERGE TO MAIN ----------
+  auto-merge-to-main:
+    name: 🔄 Auto-Merge to Main
+    needs: [monitor]
+    if: github.ref == 'refs/heads/staging' && github.event_name == 'push'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          fetch-depth: 0
+
+      - name: Configure git
+        run: |
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+
+      - name: Merge staging into main
+        run: |
+          git fetch origin main staging
+          git checkout main
+          git merge origin/staging --no-edit
+          git push origin main
+
+      - name: Create success notification
+        run: |
+          echo "✅ Successfully merged staging → main after all tests passed!"
+          echo "🚀 Deployment is now live in production."
