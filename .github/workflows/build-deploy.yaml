@@ -2,13 +2,44 @@ name: CI/CD with E2E Integration Tests & Monitoring (Cloud Run)
 
 on:
   push:
-    branches: [staging]
+    branches: [staging, main]
+  pull_request:
+    branches: [staging, main]
 
 permissions:
   checks: write
   contents: read
+  pull-requests: write
 
 jobs:
+  # ---------- PHASE 0: PROTECT MAIN BRANCH ----------
+  protect-main:
+    name: 🔐 Protect Main Branch
+    if: github.ref == 'refs/heads/main' || (github.event_name == 'pull_request' && github.base_ref == 'main')
+    runs-on: ubuntu-latest
+    steps:
+      - name: ❌ Block direct push to main
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        run: |
+          echo "❌ ERROR: Direct pushes to main are not allowed!"
+          echo "Production branch can only be updated from staging branch through CI/CD."
+          echo ""
+          echo "📋 Workflow:"
+          echo "   1. Push changes to staging branch"
+          echo "   2. All tests run automatically"
+          echo "   3. After passing all tests, auto-merge to main"
+          exit 1
+
+      - name: ❌ Block PR from non-staging to main
+        if: github.event_name == 'pull_request' && github.base_ref == 'main' && github.head_ref != 'staging'
+        run: |
+          echo "❌ ERROR: Only staging branch can create PRs to main!"
+          echo "This ensures all changes are tested before reaching production."
+          exit 1
+
+      - name: ✅ Allow staging to main
+        if: github.event_name == 'pull_request' && github.base_ref == 'main' && github.head_ref == 'staging'
+        run: echo "✅ PR from staging to main is allowed"
   # ---------- PHASE 1: LINT (Static Analysis) ----------
   lint:
     name: 🔍 Lint & Analyze
