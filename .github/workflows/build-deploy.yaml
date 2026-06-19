@@ -111,7 +111,7 @@ jobs:
           name: 'Unit Test Report'
           path: 'test-results/unit-tests.json'
           reporter: flutter-json
-          fail-on-error: false
+          fail-on-error: true
 
   # ---------- PHASE 3: INTEGRATION / E2E TESTS ----------
   e2e-test:
@@ -166,13 +166,33 @@ jobs:
           name: 'E2E Test Report'
           path: 'test-results/e2e-*.json'
           reporter: flutter-json
-          fail-on-error: false
+          fail-on-error: true
+  # failure-handler:
+  #   name: ❌ Failure Handler
+  #   needs: [lint, unit-test, e2e-test]
+  #   if: failure()   # runs if any of the needed jobs fail
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - name: Notify about failed tests
+  #       run: |
+  #         echo "## ⛔ Pipeline halted – test failures detected" >> $GITHUB_STEP_SUMMARY
+  #         echo "" >> $GITHUB_STEP_SUMMARY
+  #         echo "The **build-push** and **deploy** stages have been **skipped** due to test failures." >> $GITHUB_STEP_SUMMARY
+  #         echo "Please fix the issues and re-run the workflow." >> $GITHUB_STEP_SUMMARY
+
+  #     - name: Upload failure marker
+  #       uses: actions/upload-artifact@v4
+  #       with:
+  #         name: failure-marker
+  #         path: | 
+  #           ${{ github.workspace }}/failure.txt
+  #       # This is a dummy file to mark the failure; you can also include logs
+
 
   # ---------- PHASE 4: BUILD & PUSH IMAGE (requires approval) ----------
   build-push:
     name: 🐳 Build & Push Image
     needs: [unit-test, e2e-test]
-    if: always()
     runs-on: ubuntu-latest
     environment: build
     steps:
@@ -200,7 +220,6 @@ jobs:
   deploy:
     name: 🚀 Deploy to Cloud Run
     needs: build-push
-    if: always()
     runs-on: ubuntu-latest
     environment: production
     steps:
