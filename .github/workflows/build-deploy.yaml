@@ -169,7 +169,7 @@ jobs:
 
       - name: Build & Push image
         run: |
-          IMAGE="${{ secrets.GCP_REGION }}-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/${{ secrets.ARTIFACT_REPO_STAGING }}/pso"
+          IMAGE="${{ secrets.GCP_REGION }}-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/${{ secrets.ARTIFACT_REPO }}/pso"
           docker build \
             --build-arg SUPABASE_URL=${{ secrets.SUPABASE_URL }} \
             --build-arg SUPABASE_ANON_KEY=${{ secrets.SUPABASE_ANON_KEY }} \
@@ -194,7 +194,7 @@ jobs:
 
       - name: Deploy to Cloud Run
         run: |
-          IMAGE="${{ secrets.GCP_REGION }}-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/${{ secrets.ARTIFACT_REPO_STAGING }}/pso"
+          IMAGE="${{ secrets.GCP_REGION }}-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/${{ secrets.ARTIFACT_REPO }}/pso"
           gcloud run deploy my-app-service \
             --image=$IMAGE:${GITHUB_SHA} \
             --region=${{ secrets.GCP_REGION }} \
