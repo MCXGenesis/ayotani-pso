@@ -45,7 +45,7 @@ void main() {
         providers: [
           ChangeNotifierProvider(create: (_) => AuthProvider()),
           ChangeNotifierProvider(create: (_) => CartProvider()),
-          ChangeNotifierProvider(create: (_) => ThemeProvider()), // Kept your ThemeProvider!
+          ChangeNotifierProvider(create: (_) => ThemeProvider()),
         ],
         child: const App(),
       ),
