@@ -1,4 +1,4 @@
-name: CI/CD with E2E Integration Tests & Monitoring (Cloud Run) - Week 4
+name: CI/CD with E2E Integration Tests & Monitoring (Cloud Run)
 
 on:
   push:
