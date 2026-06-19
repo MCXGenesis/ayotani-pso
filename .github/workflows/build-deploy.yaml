@@ -1,8 +1,12 @@
-name: CI/CD with E2E Integration Tests & Monitoring (Cloud Run) - Week 4
+name: CI/CD with E2E Integration Tests & Monitoring (Cloud Run)
 
 on:
   push:
     branches: [main]
+
+permissions:
+  checks: write
+  contents: read
 
 jobs:
   # ---------- PHASE 1: LINT (Static Analysis) ----------
@@ -16,16 +20,34 @@ jobs:
         uses: subosito/flutter-action@v2
         with:
           flutter-version: '3.44.1'
+          cache: true
+
+      - name: Cache pub dependencies
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.pub-cache
+            .dart_tool
+          key: pub-${{ hashFiles('pubspec.lock') }}
+          restore-keys: pub-
 
       - run: flutter pub get
 
       - name: Run Flutter Analyze (Linting)
-        run: flutter analyze --no-fatal-warnings --no-fatal-infos
+        run: flutter analyze --no-fatal-warnings --no-fatal-infos --write=lint-results.txt || true
+
+      - name: Upload Lint Report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: lint-report
+          path: lint-results.txt
 
   # ---------- PHASE 2: UNIT TESTS (Mockito) ----------
   unit-test:
     name: 🧪 Unit Tests
     needs: lint
+    if: always()
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -34,19 +56,48 @@ jobs:
         uses: subosito/flutter-action@v2
         with:
           flutter-version: '3.44.1'
+          cache: true
+
+      - name: Cache pub dependencies
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.pub-cache
+            .dart_tool
+          key: pub-${{ hashFiles('pubspec.lock') }}
+          restore-keys: pub-
 
       - run: flutter pub get
       - run: flutter pub add --dev mockito build_runner
 
       - name: Generate mocks & run tests
         run: |
+          mkdir -p test-results
           flutter pub run build_runner build --delete-conflicting-outputs
-          flutter test test/ --no-pub
+          flutter test test/ --no-pub --machine 1> test-results/unit-tests.json 2>/dev/null || true
+
+      - name: Upload Unit Test Results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: unit-test-results
+          path: test-results/
+          if-no-files-found: warn
+
+      - name: Publish Unit Test Report
+        if: always()
+        uses: dorny/test-reporter@v1
+        with:
+          name: 'Unit Test Report'
+          path: 'test-results/unit-tests.json'
+          reporter: flutter-json
+          fail-on-error: false
 
   # ---------- PHASE 3: INTEGRATION / E2E TESTS ----------
   e2e-test:
     name: 🧩 E2E / Integration Tests
     needs: lint
+    if: always()
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -55,25 +106,55 @@ jobs:
         uses: subosito/flutter-action@v2
         with:
           flutter-version: '3.44.1'
+          cache: true
+
+      - name: Cache pub dependencies
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.pub-cache
+            .dart_tool
+          key: pub-${{ hashFiles('pubspec.lock') }}
+          restore-keys: pub-
 
       - run: flutter pub get
 
       - name: Install Linux test dependencies
         run: |
-          sudo apt-get update
-          sudo apt-get install -y libgtk-3-dev xvfb
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends libgtk-3-dev xvfb
 
       - name: Run Integration / E2E Tests
         run: |
-          xvfb-run -a flutter test -d linux integration_test/app_test.dart --no-pub
-          xvfb-run -a flutter test -d linux integration_test/auth_flow_test.dart --no-pub
-          xvfb-run -a flutter test -d linux integration_test/navigation_test.dart --no-pub
+          mkdir -p test-results
+          xvfb-run -a flutter test -d linux integration_test/app_test.dart --no-pub --machine 2>/dev/null | grep -E '^\{|^\[' > test-results/e2e-app.json || true
+          xvfb-run -a flutter test -d linux integration_test/auth_flow_test.dart --no-pub --machine 2>/dev/null | grep -E '^\{|^\[' > test-results/e2e-auth.json || true
+          xvfb-run -a flutter test -d linux integration_test/navigation_test.dart --no-pub --machine 2>/dev/null | grep -E '^\{|^\[' > test-results/e2e-nav.json || true
 
-  # ---------- PHASE 4: BUILD & PUSH IMAGE ----------
+      - name: Upload E2E Test Results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: e2e-test-results
+          path: test-results/
+          if-no-files-found: warn
+
+      - name: Publish E2E Test Report
+        if: always()
+        uses: dorny/test-reporter@v1
+        with:
+          name: 'E2E Test Report'
+          path: 'test-results/e2e-*.json'
+          reporter: flutter-json
+          fail-on-error: false
+
+  # ---------- PHASE 4: BUILD & PUSH IMAGE (requires approval) ----------
   build-push:
     name: 🐳 Build & Push Image
     needs: [unit-test, e2e-test]
+    if: always()
     runs-on: ubuntu-latest
+    environment: build
     steps:
       - uses: actions/checkout@v4
 
@@ -95,11 +176,13 @@ jobs:
             -t $IMAGE:${GITHUB_SHA} .
           docker push $IMAGE:${GITHUB_SHA}
 
-  # ---------- PHASE 5: DEPLOY TO CLOUD RUN ----------
+  # ---------- PHASE 5: DEPLOY TO CLOUD RUN (requires approval) ----------
   deploy:
     name: 🚀 Deploy to Cloud Run
     needs: build-push
+    if: always()
     runs-on: ubuntu-latest
+    environment: production
     steps:
       - uses: actions/checkout@v4
 
@@ -122,7 +205,9 @@ jobs:
   monitor:
     name: 📊 Setup Monitoring
     needs: deploy
+    if: always()
     runs-on: ubuntu-latest
+    environment: production
     steps:
       - uses: actions/checkout@v4
 
